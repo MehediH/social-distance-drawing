@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "express": "~4.17.1",
+    "node-sass": "^4.13.1",
     "socket.io": "~2.3.0"
   },
   "scripts": {
@@ -16,7 +17,6 @@
   "author": "Mehedi Hassan",
   "license": "MIT",
   "devDependencies": {
-    "node-sass": "^4.13.1",
     "nodemon": "^2.0.3"
   }
 }

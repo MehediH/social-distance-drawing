@@ -8,7 +8,7 @@ const { room } = Qs.parse(location.search, {
 const socket = io();
 
 let canvas = document.getElementsByClassName('whiteboard')[0];
-let colors = document.getElementsByClassName('color');
+let colors = document.querySelector('.colors');
 let context = canvas.getContext('2d');
 let user = document.getElementsByClassName("user")[0];
 
@@ -17,6 +17,7 @@ socket.emit("joinRoom", {
   id: room,
   canvas: [],
   users: [],
+  colls: "",
   created: new Date()
 })
 
@@ -65,6 +66,14 @@ socket.on("newUser", (user) => {
   }
 })
 
+socket.on("colluded", (collision) => {
+  document.body.classList.add("colluded")
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  setTimeout(() => {
+    document.body.classList.remove("colluded")
+  }, 500);
+})
+
 
 socket.on("playerDisconnect", (id) => {
   if(!document.getElementById(id)){
@@ -95,9 +104,27 @@ function startListening(user){
   canvas.addEventListener('touchcancel', onMouseUp, false);
   canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
 
-  for (var i = 0; i < colors.length; i++){
-    colors[i].addEventListener('click', onColorUpdate, false);
-  }
+  // for (var i = 0; i < colors.length; i++){
+  //   colors[i].addEventListener('click', onColorUpdate, false);
+  // }
+
+
+  colors.addEventListener("click", (e) => {
+    if(e.target.classList.contains("colors")) {
+      return;
+    }
+
+    current.color = e.target.className.split(' ')[1];
+    e.target.classList.add("active")
+
+    let others = document.getElementsByClassName("color")
+    for(let i=0; i < others.length; i++){
+      if(!others[i].classList.contains(current.color)){
+        others[i].classList.remove("active")
+      }
+    }
+  })
+
 }
 
 
@@ -181,9 +208,6 @@ function onMouseMove(e){
   current.y = e.clientY||e.touches[0].clientY;
 }
 
-function onColorUpdate(e){
-  current.color = e.target.className.split(' ')[1];
-}
 
 // limit the number of events per second
 function throttle(callback, delay) {

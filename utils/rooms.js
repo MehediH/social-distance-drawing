@@ -5,16 +5,16 @@ function getRooms(){
 }
 
 // Join user to chat
-function userJoin(id, avatar, room, sockets) {
-  const user = { id, avatar, sockets };
+function userJoin(id, avatar, x, y, room) {
+  const user = { id, avatar, x, y };
 
-  const roomIndex = rooms.findIndex(r => r.id === room.id);
+  const foundRoom = rooms.find(r => r.id === room.id);
 
-  const existingRoomUsers = rooms[roomIndex].users;
+  const existingRoomUsers = foundRoom.users;
   const findInRoom = existingRoomUsers.findIndex(user => user.id === id)
 
   if(findInRoom === -1){
-    rooms[roomIndex].users.push(user)
+    foundRoom.users.push(user)
   }
 
   return user;
@@ -27,17 +27,25 @@ function getRoom(id) {
 
 // create room
 function createRoom(room){
+    
     rooms.push(room)
 
     return room;
 }
 
-// Get current user
 function updateRoomCanvas(rid, data) {
     const room = rooms.find(room => room.id === rid)
     if(!room){return;}
 
     room.canvas.push(data)
+    return updateUserPos(data, room)
+}
+
+function updateUserPos(data, room){
+  let user = room.users.find(user => user.id === data.user.id);
+  user.x = data.user.x
+  user.y = data.user.y
+  return room.users;
 }
 
 // User leaves chat
@@ -67,6 +75,15 @@ function getRoomUsers(roomId) {
     return room.users;
 }
 
+// get single user from a room
+function getUserFromRoom(rid, uid){
+  let room = rooms.find(room => room.id === rid);
+
+  if(!room){return;}
+
+  return room.users.find(user => user.id === uid)
+}
+
 module.exports = {
   getRooms,
   getRoom,
@@ -74,5 +91,6 @@ module.exports = {
   userJoin,
   updateRoomCanvas,
   userLeave,
-  getRoomUsers
+  getRoomUsers,
+  getUserFromRoom
 };

@@ -6,12 +6,18 @@
 * {
   box-sizing: border-box;
 }
-
+ 
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
   font-family: 'VT323', monospace;
+  overflow: hidden;  
+}
+
+.colluded{
+  background: red;
+  transition: 0.3s background ease-in-out;
 }
 
 .splash{
@@ -69,7 +75,7 @@ html, body {
   background-color: red;
   border-radius: 50px;
   position: absolute;
-  z-index: 999;
+  z-index: 999; 
   pointer-events: none;
   cursor: none;
 
@@ -88,15 +94,25 @@ html, body {
   right: 0;
   bottom: 0;
   top: 0;
+  cursor: none;
 }
 
-.colors {
+.toolbar{
   position: fixed;
-  margin: 20px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  grid-gap: 20px;
-  cursor: pointer;
+  z-index: 999;
+  width: 100%;
+  padding: 0 20px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+
+  .colors {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+    height: 50px;
+    cursor: pointer;
+  }
 }
 
 .color { 
@@ -106,6 +122,11 @@ html, body {
   border-radius: 50px;
   box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
   transition: 0.3s transform ease-in-out;
+  opacity: 0.65;
+}
+
+.color.active{
+  opacity: 1;
 }
 
 .color:hover{

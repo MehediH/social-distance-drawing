@@ -3,8 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms} = require("./utils/rooms");
-
+const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom} = require("./utils/rooms");
 
 const app = express();
 const server = http.createServer(app);
@@ -27,7 +26,7 @@ io.on('connection', (socket) => {
 
     socket.join(room.id)
 
-    let user = userJoin(socket.id, "#"+((1<<24)*Math.random()|0).toString(16), room)
+    let user = userJoin(socket.id, "#"+((1<<24)*Math.random()|0).toString(16), 0, 0, room)
 
     uid = socket.id;
 
@@ -42,7 +41,34 @@ io.on('connection', (socket) => {
 
 
   socket.on('drawing', (data) => {
-    updateRoomCanvas(rid, data)
+    let updatedUserPositions = updateRoomCanvas(rid, data)
+    let currentUser = getUserFromRoom(rid, uid)
+
+    for(user in updatedUserPositions){
+      user = updatedUserPositions[user];
+
+      if(user.id !== currentUser.id){
+        let dx = currentUser.x - user.x;
+        let dy = currentUser.y = user.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+        //distance < circle1.radius + circle2.radius
+        if (distance < 80) {
+          // collision detected!
+          // console.log(`${new Date()} collision between ${user.id} and ${currentUser.id}`)
+          let collision = {
+            p1: currentUser,
+            p2: user,
+            distance,
+            dx,
+            dy
+          }
+
+          io.to(rid).emit("colluded", collision)
+      }
+      }
+    }
+
     socket.broadcast.to(rid).emit('drawing', data)
   });
 
