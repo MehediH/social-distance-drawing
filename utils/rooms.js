@@ -1,4 +1,4 @@
-const rooms = [];
+let rooms = [];
 
 function getRooms(){
     return rooms;
@@ -49,15 +49,22 @@ function userLeave(uid, rid) {
     const findInRoom = existingRoomUsers.findIndex(user => user.id === uid)
   
     if(findInRoom !== -1){
+      // decide whether to reset room
+      let roomUsers = getRoomUsers(rid)
+      
+      if(roomUsers.length === 1){
+        rooms = rooms.filter(room => room.id !== rid)
+      }
+
       return existingRoomUsers.splice(findInRoom, 1)[0];
     }
 }
 
 // Get room users
 function getRoomUsers(roomId) {
-    const roomIndex = rooms.findIndex(r => r.id === roomId);
-
-    return rooms[roomIndex].users;
+    const room = rooms.find(r => r.id === roomId);
+    if(!room){return;}
+    return room.users;
 }
 
 module.exports = {
