@@ -1,25 +1,29 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Socket.IO whiteboard</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Distance Drawing</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css"/>
 </head>
-<body>
-
-  <canvas class="whiteboard" ></canvas>
-
-  <div class="colors">
-    <div class="color black"></div>
-    <div class="color red"></div>
-    <div class="color green"></div>
-    <div class="color blue"></div>
-    <div class="color yellow"></div>
-  </div>
+<body class="splash">
+    <div class="welcome">
+        <h1>Social Distance Drawing</h1>
+        <form action="board.html">
+            <div class="form-control">
+                <input
+                    type="text"
+                    name="room"
+                    id="room"
+                    placeholder="Enter a society name..."
+                    required
+                />
+            </div>
   
-  <div class="user"></div>
-
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/main.js"></script>
+            <button type="submit" class="btn">Join Society</button>
+        </form>
+    </div>
 </body>
 </html>

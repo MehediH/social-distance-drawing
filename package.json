@@ -2,20 +2,21 @@
   "name": "social-dinstance-drawing",
   "version": "1.0.0",
   "description": "A simple collaborative whiteboard using socket.io, with social distancing limits",
-  "main": "index.js",
-  "keywords": [
-    "socket.io",
-    "whiteboard"
-  ],
+  "main": "server.js",
   "dependencies": {
-    "avatar-generator": "^2.0.3",
     "express": "~4.17.1",
-    "shortid": "^2.2.15",
     "socket.io": "~2.3.0"
   },
   "scripts": {
-    "start": "node index"
+    "start": "node server",
+    "server": "nodemon server",
+    "css": "node-sass -w . -o public/",
+    "dev": "npm run server && npm run css"
   },
-  "author": "Damien Arrachequesne",
-  "license": "MIT"
+  "author": "Mehedi Hassan",
+  "license": "MIT",
+  "devDependencies": {
+    "node-sass": "^4.13.1",
+    "nodemon": "^2.0.3"
+  }
 }
