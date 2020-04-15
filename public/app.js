@@ -207,7 +207,7 @@ function onUserEvent(data){
     let user = document.createElement("div");
     user.classList.add("user")
     user.id = data.user.id;
-    user.style.backgroundColor = data.user.color;
+    user.style.backgroundColor = data.user.avatar;
     document.body.appendChild(user)
   } else{
     let user = document.getElementById(data.user.id)
