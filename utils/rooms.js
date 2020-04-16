@@ -6,7 +6,7 @@ function getRooms(){
 
 // Join user to chat
 function userJoin(id, avatar, x, y, room) {
-  const user = { id, avatar, x, y };
+  const user = { id, avatar, x, y, lastDraw: ""};
 
   const foundRoom = rooms.find(r => r.id === room.id);
 
@@ -43,8 +43,11 @@ function updateRoomCanvas(rid, data) {
 
 function updateUserPos(data, room){
   let user = room.users.find(user => user.id === data.user.id);
+
   user.x = data.user.x
   user.y = data.user.y
+  user.lastDraw = data.user.lastDraw
+  
   return room.users;
 }
 
@@ -84,6 +87,14 @@ function getUserFromRoom(rid, uid){
   return room.users.find(user => user.id === uid)
 }
 
+function resetRoomCanvas(rid){
+  let room = rooms.find(room => room.id === rid);
+
+  if(!room){return;}
+
+  room.canvas = []
+}
+
 module.exports = {
   getRooms,
   getRoom,
@@ -92,5 +103,6 @@ module.exports = {
   updateRoomCanvas,
   userLeave,
   getRoomUsers,
-  getUserFromRoom
+  getUserFromRoom,
+  resetRoomCanvas
 };

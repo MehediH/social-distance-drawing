@@ -76,7 +76,7 @@ socket.on("colluded", (collision) => {
 
 
 socket.on("playerDisconnect", (id) => {
-  if(!document.getElementById(id)){
+  if(!document.getElementById(id)){ 
     return;
   }
 
@@ -154,6 +154,9 @@ function drawLine(x0, y0, x1, y1, color, emit, u){
     user.style.left = u.x + "px"
     user.style.top = (u.y-20) + "px"
   }
+
+  current.user.lastDraw = new Date();
+
 
   socket.emit('drawing', {
     x0: x0 / w,
@@ -264,6 +267,10 @@ function onDrawingEvent(data){
 
 // make the canvas fill its parent
 function onResize() {
+  let temp = context.getImageData(0, 0, canvas.width, canvas.height)
+
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+
+  context.putImageData(temp, 0, 0)
 }

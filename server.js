@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom} = require("./utils/rooms");
+const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas} = require("./utils/rooms");
 
 const app = express();
 const server = http.createServer(app);
@@ -43,29 +43,35 @@ io.on('connection', (socket) => {
   socket.on('drawing', (data) => {
     let updatedUserPositions = updateRoomCanvas(rid, data)
     let currentUser = getUserFromRoom(rid, uid)
+    
+    if(currentUser){
+      let ldP1 = new Date(currentUser.lastDraw);
 
-    for(user in updatedUserPositions){
-      user = updatedUserPositions[user];
+      for(user in updatedUserPositions){  
+        user = updatedUserPositions[user];
 
-      if(user.id !== currentUser.id){
-        let dx = currentUser.x - user.x;
-        let dy = currentUser.y = user.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
+        if(user.id !== currentUser.id){
+          let dx = currentUser.x - user.x;
+          let dy = currentUser.y = user.y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+          let ldP2 = new Date(user.lastDraw);
 
-        //distance < circle1.radius + circle2.radius
-        if (distance < 80) {
-          // collision detected!
-          // console.log(`${new Date()} collision between ${user.id} and ${currentUser.id}`)
-          let collision = {
-            p1: currentUser,
-            p2: user,
-            distance,
-            dx,
-            dy
+          let timeDiff = Math.abs(ldP2-ldP1) / 1000
+
+          if (distance < 80 && timeDiff < 1.5) {
+            resetRoomCanvas(rid)
+
+            let collision = {
+              p1: currentUser,
+              p2: user,
+              distance,
+              dx,
+              dy
+            }
+
+            io.to(rid).emit("colluded", collision)
           }
-
-          io.to(rid).emit("colluded", collision)
-      }
+        }
       }
     }
 
