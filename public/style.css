@@ -53,12 +53,14 @@ html, body {
       border: 5px solid red; }
 
 .user {
-  width: 50px;
-  height: 50px;
+  width: 25px;
+  height: 25px;
   background-color: red;
   border-radius: 50px;
   position: absolute;
   z-index: 999;
+  margin-top: 5px;
+  margin-right: 10px;
   pointer-events: none;
   cursor: none;
   box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25); }
@@ -77,8 +79,6 @@ html, body {
   cursor: none; }
 
 .toolbar {
-  position: fixed;
-  z-index: 999;
   width: 100%;
   padding: 0 20px;
   margin-top: 20px;
@@ -89,7 +89,12 @@ html, body {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
     height: 50px;
-    cursor: pointer; }
+    cursor: pointer;
+    position: fixed;
+    z-index: 9999; }
+  .toolbar .player-count {
+    position: fixed;
+    right: 20px; }
 
 .color {
   display: inline-block;

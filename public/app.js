@@ -12,6 +12,7 @@ let colors = document.querySelector('.colors');
 let context = canvas.getContext('2d');
 let user = document.getElementsByClassName("user")[0];
 
+
 // request to join room
 socket.emit("joinRoom", {
   id: room,

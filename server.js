@@ -47,6 +47,8 @@ io.on('connection', (socket) => {
     if(currentUser){
       let ldP1 = new Date(currentUser.lastDraw);
 
+      console.log(updatedUserPositions)
+
       for(user in updatedUserPositions){  
         user = updatedUserPositions[user];
 
