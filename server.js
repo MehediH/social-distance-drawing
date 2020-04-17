@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas} = require("./utils/rooms");
+const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom} = require("./utils/rooms");
 
 const app = express();
 const server = http.createServer(app);
@@ -17,16 +17,22 @@ io.on('connection', (socket) => {
   let rid;
 
   socket.on("joinRoom", (room) => {
-
+    
     if(getRoom(room.id) === undefined){ // if a room doesn't exist, we make a new one
       room = createRoom(room)
+    } else{
+      room = getRoom(room.id)
     }
 
     rid = room.id;
 
+    if(room.locked){
+      socket.emit("joinFail", "Room is locked")
+    }
+
     socket.join(room.id)
 
-    let user = userJoin(socket.id, "#"+((1<<24)*Math.random()|0).toString(16), 0, 0, room)
+    let user = userJoin(socket.id, "#"+((1<<24)*Math.random()|0).toString(16), 0, 0, 0, 0, room)
 
     uid = socket.id;
 
@@ -47,20 +53,22 @@ io.on('connection', (socket) => {
     if(currentUser){
       let ldP1 = new Date(currentUser.lastDraw);
 
-      // console.log(updatedUserPositions)
 
       for(user in updatedUserPositions){  
         user = updatedUserPositions[user];
 
         if(user.id !== currentUser.id){
           let dx = currentUser.x - user.x; 
-          let dy = currentUser.y = user.y;
-          let distance = Math.sqrt(dx * dx + dy * dy);
+          let dy = currentUser.y - user.y;
+
+
+          let distance = Math.sqrt((dx * dx) + (dy * dy));
           let ldP2 = new Date(user.lastDraw);
 
           let timeDiff = Math.abs(ldP2-ldP1) / 1000
+          
 
-          if (distance < 80 && timeDiff < 1.5) {
+          if (distance < 8 && timeDiff < 2) {
             resetRoomCanvas(rid)
 
             let collision = {
@@ -83,6 +91,16 @@ io.on('connection', (socket) => {
   socket.on('userMoving', (data) => {
     socket.broadcast.to(rid).emit('userMoving', data)
   });
+
+  socket.on("clearCanvas", (user) => {
+    resetRoomCanvas(rid)
+    socket.broadcast.to(rid).emit('clearCanvas', user)
+  })
+
+  socket.on("lockRoom", (user) => {
+    let status = lockRoom(rid)
+    io.to(rid).emit("lockRoom", {user, status})
+  })
 
   socket.on("disconnect", () => {
     const user = userLeave(uid, rid)

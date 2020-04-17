@@ -14,8 +14,9 @@ html, body {
 .colluded {
   background-color: #f0eded;
   transition: 0.3s all ease-in-out; }
-  .colluded .oops {
-    display: block; }
+
+.colluded .oops {
+  display: block; }
 
 .oops {
   text-align: center;
@@ -52,34 +53,39 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%); }
-  .welcome h1 {
-    font-size: 50px;
-    margin: 0px; }
-  .welcome label {
-    display: block;
-    font-size: 30px; }
-  .welcome input {
-    margin: 20px 0;
-    width: 100%;
-    height: 50px;
-    border-radius: 50px;
-    padding: 0 20px;
-    border: 0;
-    outline: 0;
-    font-size: 25px; }
-  .welcome button {
-    padding: 15px 35px;
-    background-color: #000;
-    color: #fff;
-    border-radius: 50px;
-    border: 0px;
-    outline: 0;
-    font-size: 20px;
-    cursor: pointer;
-    border: 5px solid transparent;
-    transition: 0.3s all ease-in-out; }
-    .welcome button:hover {
-      border: 5px solid red; }
+
+.welcome h1 {
+  font-size: 50px;
+  margin: 0px; }
+
+.welcome label {
+  display: block;
+  font-size: 30px; }
+
+.welcome input {
+  margin: 20px 0;
+  width: 100%;
+  height: 50px;
+  border-radius: 50px;
+  padding: 0 20px;
+  border: 0;
+  outline: 0;
+  font-size: 25px; }
+
+.welcome button {
+  padding: 15px 35px;
+  background-color: #000;
+  color: #fff;
+  border-radius: 50px;
+  border: 0px;
+  outline: 0;
+  font-size: 20px;
+  cursor: pointer;
+  border: 5px solid transparent;
+  transition: 0.3s all ease-in-out; }
+
+.welcome button:hover {
+  border: 5px solid red; }
 
 .user {
   width: 25px;
@@ -111,39 +117,46 @@ html, body {
   margin-top: 20px;
   display: flex;
   justify-content: space-between; }
-  .toolbar .buttons {
-    cursor: pointer;
-    position: fixed;
-    z-index: 9999;
-    display: flex; }
-  .toolbar .colors {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    grid-gap: 20px;
-    height: 50px; }
-  .toolbar .btn {
-    margin-left: 20px;
-    transition: 0.3s all ease-in-out;
-    border-radius: 50px;
-    width: 50px;
-    height: 50px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
-    border: 3px solid #504949; }
-    .toolbar .btn svg {
-      width: 30px;
-      height: 30px; }
-    .toolbar .btn:hover {
-      transform: translateY(-3px); }
-  .toolbar .locked {
-    background-color: #ea7171;
-    border: 5px solid #ea7171; }
-  .toolbar .player-count {
-    position: fixed;
-    right: 20px; }
+
+.toolbar .buttons {
+  cursor: pointer;
+  position: fixed;
+  z-index: 9999;
+  display: flex; }
+
+.toolbar .colors {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-gap: 20px;
+  height: 50px; }
+
+.toolbar .btn {
+  margin-left: 20px;
+  transition: 0.3s all ease-in-out;
+  border-radius: 50px;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
+  border: 3px solid #504949; }
+
+.toolbar .btn svg {
+  width: 30px;
+  height: 30px; }
+
+.toolbar .btn:hover {
+  transform: translateY(-3px); }
+
+.toolbar .locked {
+  background-color: #ea7171;
+  border: 5px solid #ea7171; }
+
+.toolbar .player-count {
+  position: fixed;
+  right: 20px; }
 
 .color {
   display: inline-block;

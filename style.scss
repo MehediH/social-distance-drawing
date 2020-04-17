@@ -16,8 +16,50 @@ html, body {
 }
 
 .colluded{
-  background: red;
-  transition: 0.3s background ease-in-out;
+  background-color: rgb(240, 237, 237);
+  transition: 0.3s all ease-in-out;
+
+  .oops{
+    display: block;
+  }
+}
+
+.oops{
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  font-size: 180px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 0;
+  pointer-events: none;
+  display: none;
+}
+
+.emoji{
+  animation: chicago 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+
+@keyframes chicago {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 
 .splash{
@@ -76,8 +118,6 @@ html, body {
   border-radius: 50px;
   position: absolute;
   z-index: 999; 
-  margin-top: 5px;
-  margin-right: 10px;
   pointer-events: none;
   cursor: none;
 
@@ -87,6 +127,7 @@ html, body {
 /**
  * Canvas
  */
+
 
 .whiteboard {
   height: 100%;
@@ -106,15 +147,50 @@ html, body {
   display: flex;
   justify-content: space-between;
 
+  .buttons{
+    cursor: pointer;
+    position: fixed;
+    z-index: 9999;
+    display: flex;
+  }
+
   .colors {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
     height: 50px;
-    cursor: pointer;
-    position: fixed;
-    z-index: 9999;
+    
   }
+
+  .btn{
+    margin-left: 20px;
+    transition: 0.3s all ease-in-out;
+    border-radius: 50px;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
+    border: 3px solid #504949;
+
+    svg{
+      width: 30px;
+      height: 30px;
+    }
+
+    &:hover{
+      transform: translateY(-3px);
+    }
+  }
+
+  .locked{
+    background-color: #ea7171;
+    border: 5px solid #ea7171;
+  }
+
+
 
   .player-count{
     position: fixed;
@@ -129,11 +205,12 @@ html, body {
   border-radius: 50px;
   box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
   transition: 0.3s transform ease-in-out;
-  opacity: 0.65;
+  border: 5px solid transparent;
 }
 
 .color.active{
-  opacity: 1;
+  border: 5px solid white;
+
 }
 
 .color:hover{

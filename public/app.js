@@ -11,7 +11,8 @@ let canvas = document.getElementsByClassName('whiteboard')[0];
 let colors = document.querySelector('.colors');
 let context = canvas.getContext('2d');
 let user = document.getElementsByClassName("user")[0];
-
+let clear = document.querySelector(".clear");
+let lock = document.querySelector(".lock");
 
 // request to join room
 socket.emit("joinRoom", {
@@ -19,7 +20,8 @@ socket.emit("joinRoom", {
   canvas: [],
   users: [],
   colls: "",
-  created: new Date()
+  created: new Date(),
+  locked: false
 })
 
 
@@ -72,7 +74,7 @@ socket.on("colluded", (collision) => {
   context.clearRect(0, 0, canvas.width, canvas.height);
   setTimeout(() => {
     document.body.classList.remove("colluded")
-  }, 500);
+  }, 1000);
 })
 
 
@@ -153,7 +155,7 @@ function drawLine(x0, y0, x1, y1, color, emit, u){
 
   if(u){
     user.style.left = u.x + "%"
-    user.style.top = u.y + "%"
+    user.style.top = u.y-2 + "%"
   }
 
   current.user.lastDraw = new Date();
@@ -180,10 +182,10 @@ function onMouseUp(e){
   drawing = false;
   
   let pos = getMousePosition(e.clientX, e.clientY)
-  console.log(pos)
   current.user.x = pos[0]
   current.user.y = pos[1]
-  
+  current.user.pX = e.clientX
+  current.user.pY = e.clientY
 
   drawLine(current.x, current.y, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, current.color, true, current.user);
 }
@@ -191,12 +193,14 @@ function onMouseUp(e){
 function onMouseMove(e){
   let pos = getMousePosition(e.clientX, e.clientY)
   user.style.left = pos[0] + "%"
-  user.style.top = pos[1] + "%"
+  user.style.top = pos[1]-2 + "%"
 
   if (!drawing) { 
 
     current.user.x = pos[0]
     current.user.y = pos[1]
+    current.user.pX = e.clientX
+    current.user.pY = e.clientY
 
     socket.emit('userMoving', {
       user: current.user
@@ -209,7 +213,8 @@ function onMouseMove(e){
 
   current.user.x = pos[0]
   current.user.y = pos[1]
-
+  current.user.pX = e.clientX
+  current.user.pY = e.clientY
   
   drawLine(current.x, current.y, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, current.color, true, current.user);
   current.x = e.clientX||e.touches[0].clientX;
@@ -265,7 +270,7 @@ function onDrawingEvent(data){
   } else{
     let user = document.getElementById(data.user.id)
     user.style.left = data.user.x + "%"
-    user.style.top = data.user.y + "%"
+    user.style.top = data.user.y-2 + "%"
   
   }
   
@@ -285,3 +290,31 @@ function onResize() {
 function getMousePosition(x, y){
   return [(x / window.innerWidth) * 100, (y / window.innerHeight) * 100]
 }
+
+clear.addEventListener("click", () => {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  socket.emit("clearCanvas", current.user)
+})
+
+socket.on("clearCanvas", (user) => {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+})
+
+lock.addEventListener("click", () => {
+  socket.emit("lockRoom", current.user)
+})
+
+socket.on("joinFail", (message) => {
+  alert(message)
+  window.location = "/"
+})
+
+socket.on("lockRoom", (data) => {
+  let {user, status} = data;
+
+  if(status){
+    lock.classList.add("locked")
+  } else{
+    lock.classList.remove("locked")
+  }
+})
