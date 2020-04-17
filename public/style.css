@@ -85,7 +85,7 @@ html, body {
   width: 25px;
   height: 25px;
   background-color: red;
-  border-radius: 50px;
+  border-radius: 50px 50px 50px 0px;
   position: absolute;
   z-index: 999;
   pointer-events: none;
@@ -118,9 +118,17 @@ html, body {
     display: flex; }
   .toolbar .colors {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
     height: 50px; }
+  .toolbar .eraser {
+    display: flex;
+    align-items: center;
+    justify-content: center; }
+    .toolbar .eraser svg {
+      width: 30px;
+      height: 30px;
+      pointer-events: none; }
   .toolbar .btn {
     margin-left: 20px;
     transition: 0.3s all ease-in-out;
@@ -132,30 +140,35 @@ html, body {
     align-items: center;
     justify-content: center;
     box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
-    border: 3px solid #504949; }
+    border: 3px solid transparent; }
     .toolbar .btn svg {
       width: 30px;
-      height: 30px; }
+      height: 30px;
+      pointer-events: none; }
     .toolbar .btn:hover {
       transform: translateY(-3px); }
   .toolbar .locked {
-    background-color: #ea7171;
-    border: 5px solid #ea7171; }
+    background-color: #333333;
+    border: 5px solid #333333; }
   .toolbar .player-count {
     position: fixed;
     right: 20px; }
 
 .color {
-  display: inline-block;
+  display: flex;
   height: 48px;
   width: 48px;
   border-radius: 50px;
   box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
   transition: 0.3s transform ease-in-out;
-  border: 5px solid transparent; }
+  justify-content: center;
+  align-items: center; }
+  .color span {
+    display: none; }
 
-.color.active {
-  border: 5px solid white; }
+.color.active span {
+  position: absolute;
+  display: block; }
 
 .color:hover {
   transform: translateY(-3px); }

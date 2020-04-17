@@ -115,7 +115,7 @@ html, body {
   width: 25px; 
   height: 25px;
   background-color: red;
-  border-radius: 50px;
+  border-radius: 50px 50px 50px 0px;
   position: absolute;
   z-index: 999; 
   pointer-events: none;
@@ -156,10 +156,22 @@ html, body {
 
   .colors {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
     height: 50px;
     
+  }
+
+  .eraser{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg{
+      width: 30px;
+      height: 30px;
+      pointer-events: none;
+    }
   }
 
   .btn{
@@ -173,11 +185,12 @@ html, body {
     align-items: center;
     justify-content: center;
     box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
-    border: 3px solid #504949;
+    border: 3px solid transparent;
 
     svg{
       width: 30px;
       height: 30px;
+      pointer-events: none;
     }
 
     &:hover{
@@ -186,8 +199,8 @@ html, body {
   }
 
   .locked{
-    background-color: #ea7171;
-    border: 5px solid #ea7171;
+    background-color: #333333;
+    border: 5px solid #333333;
   }
 
 
@@ -199,18 +212,26 @@ html, body {
 }
 
 .color { 
-  display: inline-block; 
+  display: flex; 
   height: 48px; 
   width: 48px; 
   border-radius: 50px;
   box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
   transition: 0.3s transform ease-in-out;
-  border: 5px solid transparent;
+
+  justify-content: center;
+  align-items: center;
+
+  span{
+    display: none;
+  }
 }
 
 .color.active{
-  border: 5px solid white;
-
+  span{
+    position: absolute;
+    display: block;
+  }
 }
 
 .color:hover{

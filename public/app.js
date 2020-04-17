@@ -4,6 +4,9 @@ const { room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true
 });
 
+if(!room){
+  window.location = "/"
+}
 
 const socket = io();
 
@@ -144,7 +147,7 @@ function drawLine(x0, y0, x1, y1, color, emit, u){
   context.moveTo(x0, y0);
   context.lineTo(x1, y1);
   context.strokeStyle = color;
-  context.lineWidth = 2;
+  context.lineWidth = color === "white" ? 25 : 2;
   context.stroke();
   context.closePath();
 
@@ -318,3 +321,5 @@ socket.on("lockRoom", (data) => {
     lock.classList.remove("locked")
   }
 })
+
+document.addEventListener("contextmenu", e => e.preventDefault())

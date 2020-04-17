@@ -28,6 +28,7 @@ io.on('connection', (socket) => {
 
     if(room.locked){
       socket.emit("joinFail", "Room is locked")
+      return;
     }
 
     socket.join(room.id)
