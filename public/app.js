@@ -158,7 +158,7 @@ function drawLine(x0, y0, x1, y1, color, emit, u){
 
   if(u){
     user.style.left = u.x + "%"
-    user.style.top = u.y-2 + "%"
+    user.style.top = u.y+ "%"
   }
 
   current.user.lastDraw = new Date();
@@ -196,7 +196,7 @@ function onMouseUp(e){
 function onMouseMove(e){
   let pos = getMousePosition(e.clientX, e.clientY)
   user.style.left = pos[0] + "%"
-  user.style.top = pos[1]-2 + "%"
+  user.style.top = pos[1] + "%"
 
   if (!drawing) { 
 
@@ -273,7 +273,7 @@ function onDrawingEvent(data){
   } else{
     let user = document.getElementById(data.user.id)
     user.style.left = data.user.x + "%"
-    user.style.top = data.user.y-2 + "%"
+    user.style.top = data.user.y + "%"
   
   }
   
@@ -291,7 +291,7 @@ function onResize() {
 }
 
 function getMousePosition(x, y){
-  return [(x / window.innerWidth) * 100, (y / window.innerHeight) * 100]
+  return [(x / window.innerWidth) * 100, ((y / window.innerHeight) * 100)-2.5]
 }
 
 clear.addEventListener("click", () => {
