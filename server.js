@@ -53,7 +53,7 @@ io.on('connection', (socket) => {
         user = updatedUserPositions[user];
 
         if(user.id !== currentUser.id){
-          let dx = currentUser.x - user.x;
+          let dx = currentUser.x - user.x; 
           let dy = currentUser.y = user.y;
           let distance = Math.sqrt(dx * dx + dy * dy);
           let ldP2 = new Date(user.lastDraw);

@@ -152,8 +152,8 @@ function drawLine(x0, y0, x1, y1, color, emit, u){
 
 
   if(u){
-    user.style.left = u.x + "px"
-    user.style.top = (u.y-20) + "px"
+    user.style.left = u.x + "%"
+    user.style.top = u.y + "%"
   }
 
   current.user.lastDraw = new Date();
@@ -179,20 +179,24 @@ function onMouseUp(e){
   if (!drawing) { return; }
   drawing = false;
   
-  current.user.x = e.clientX
-  current.user.y = e.clientY
+  let pos = getMousePosition(e.clientX, e.clientY)
+  console.log(pos)
+  current.user.x = pos[0]
+  current.user.y = pos[1]
   
 
   drawLine(current.x, current.y, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, current.color, true, current.user);
 }
 
 function onMouseMove(e){
-  user.style.left = e.clientX + "px"
-  user.style.top = e.clientY + "px"
+  let pos = getMousePosition(e.clientX, e.clientY)
+  user.style.left = pos[0] + "%"
+  user.style.top = pos[1] + "%"
 
   if (!drawing) { 
-    current.user.x = e.clientX
-    current.user.y = e.clientY
+
+    current.user.x = pos[0]
+    current.user.y = pos[1]
 
     socket.emit('userMoving', {
       user: current.user
@@ -203,8 +207,8 @@ function onMouseMove(e){
   }
 
 
-  current.user.x = e.clientX
-  current.user.y = e.clientY
+  current.user.x = pos[0]
+  current.user.y = pos[1]
 
   
   drawLine(current.x, current.y, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, current.color, true, current.user);
@@ -240,8 +244,9 @@ function onUserEvent(data){
   } else{
     let user = document.getElementById(data.user.id)
     user.style.display = "block"
-    user.style.left = data.user.x + "px"
-    user.style.top = data.user.y + "px"
+    user.style.left = data.user.x + "%"
+    user.style.top = data.user.y + "%"
+
   }
   
 }
@@ -259,8 +264,9 @@ function onDrawingEvent(data){
     document.body.appendChild(user)
   } else{
     let user = document.getElementById(data.user.id)
-    user.style.left = data.user.x + "px"
-    user.style.top = data.user.y + "px"
+    user.style.left = data.user.x + "%"
+    user.style.top = data.user.y + "%"
+  
   }
   
   drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
@@ -274,4 +280,8 @@ function onResize() {
   canvas.height = window.innerHeight;
 
   context.putImageData(temp, 0, 0)
+}
+
+function getMousePosition(x, y){
+  return [(x / window.innerWidth) * 100, (y / window.innerHeight) * 100]
 }
