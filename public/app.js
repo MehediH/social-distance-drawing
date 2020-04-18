@@ -22,6 +22,8 @@ let brushSize = 10;
 
 brushSizeControl.value = brushSize;
 
+feather.replace() // load icons
+
 // request to join room
 socket.emit("joinRoom", {
   id: room,

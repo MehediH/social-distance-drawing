@@ -122,10 +122,19 @@ html, body {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
     height: 50px; }
+    .toolbar .colors .white {
+      background-color: #fff; }
+  .toolbar .eraser.active {
+    background-color: #333; }
+    .toolbar .eraser.active svg {
+      fill: white; }
+    .toolbar .eraser.active span {
+      display: none; }
   .toolbar .eraser {
     display: flex;
     align-items: center;
-    justify-content: center; }
+    justify-content: center;
+    transition: 0.3s all ease-in-out; }
     .toolbar .eraser svg {
       width: 30px;
       height: 30px;
@@ -144,17 +153,26 @@ html, body {
     box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
     border: 3px solid transparent; }
     .toolbar .btn svg {
-      width: 30px;
-      height: 30px;
+      width: 20px;
+      height: 20px;
       pointer-events: none; }
+    .toolbar .btn .feather-lock {
+      display: none; }
     .toolbar .btn:hover {
       transform: translateY(-3px); }
   .toolbar .locked {
     background-color: #333333;
-    border: 5px solid #333333; }
+    border: 5px solid #333333;
+    color: #fff; }
+    .toolbar .locked .feather-lock {
+      display: block; }
+    .toolbar .locked .feather-unlock {
+      display: none; }
   .toolbar .player-count {
     position: fixed;
-    right: 20px; }
+    right: 20px;
+    z-index: 999;
+    user-select: none; }
 
 .custom {
   background: #833ab4;
@@ -170,7 +188,9 @@ html, body {
   justify-content: center;
   align-items: center; }
   .color span, .custom span {
-    display: none; }
+    display: none;
+    color: #fff;
+    padding-top: 2px; }
 
 .color.active span, .custom.active span {
   position: absolute;

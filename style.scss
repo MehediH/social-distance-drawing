@@ -160,13 +160,30 @@ html, body {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
     height: 50px;
+
+    .white{
+      background-color: #fff;
+    }
     
+  }
+
+  .eraser.active{
+    background-color: #333;
+
+    svg{
+      fill: white;
+    }
+
+    span{
+      display: none;
+    }
   }
 
   .eraser{
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: 0.3s all ease-in-out;
 
     svg{
       width: 30px;
@@ -190,9 +207,13 @@ html, body {
     border: 3px solid transparent;
 
     svg{
-      width: 30px;
-      height: 30px;
+      width: 20px;
+      height: 20px;
       pointer-events: none;
+    }
+
+    .feather-lock{
+      display: none;
     }
 
     &:hover{
@@ -203,6 +224,15 @@ html, body {
   .locked{
     background-color: #333333;
     border: 5px solid #333333;
+    color: #fff;
+
+    .feather-lock{
+      display: block;
+    }
+
+    .feather-unlock{
+      display: none;
+    }
   }
 
 
@@ -210,6 +240,8 @@ html, body {
   .player-count{
     position: fixed;
     right: 20px;
+    z-index: 999;
+    user-select: none;
   }
 }
 
@@ -231,8 +263,11 @@ html, body {
 
   span{
     display: none;
+    color: #fff;
+    padding-top: 2px;
   }
 }
+
 
 .color.active, .custom.active{
   span{
