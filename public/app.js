@@ -16,6 +16,11 @@ let context = canvas.getContext('2d');
 let user = document.getElementsByClassName("user")[0];
 let clear = document.querySelector(".clear");
 let lock = document.querySelector(".lock");
+let toolbarButtons = document.querySelector(".buttons");
+let brushSizeControl = document.getElementById("brushSize");
+let brushSize = 10;
+
+brushSizeControl.value = brushSize;
 
 // request to join room
 socket.emit("joinRoom", {
@@ -44,10 +49,12 @@ socket.on("newId", (data) => {
   let w = canvas.width;
   let h = canvas.height;
 
+  // repaint existing canvas
   let c = room.canvas;
   for(let i=0; i < c.length; i++){
     let d = c[i]
-    drawLine(d.x0*w, d.y0*h, d.x1*w, d.y1*h, d.color, false, null)
+    // console.log(d)
+    drawLine(d.x0*w, d.y0*h, d.x1*w, d.y1*h, d.color, false, null, d.strokeWidth)
   }
 })
 
@@ -120,12 +127,21 @@ function startListening(user){
       return;
     }
 
-    current.color = e.target.className.split(' ')[1];
-    e.target.classList.add("active")
+    let newColor = e.target.className.split(' ')[1];
 
+    if(current.color === newColor || !newColor){
+      return;
+    }
+
+    current.color = newColor;
+
+
+    e.target.classList.add("active")
+    
     let others = document.getElementsByClassName("color")
     for(let i=0; i < others.length; i++){
       if(!others[i].classList.contains(current.color)){
+        // console.log(others[i])
         others[i].classList.remove("active")
       }
     }
@@ -142,12 +158,14 @@ window.addEventListener('resize', onResize, false);
 onResize();
 
 
-function drawLine(x0, y0, x1, y1, color, emit, u){
+function drawLine(x0, y0, x1, y1, color, emit, u, strokeWidth){
   context.beginPath();
   context.moveTo(x0, y0);
   context.lineTo(x1, y1);
   context.strokeStyle = color;
-  context.lineWidth = color === "white" ? 25 : 2;
+  context.lineWidth = strokeWidth;
+  context.lineCap = "round";
+
   context.stroke();
   context.closePath();
 
@@ -169,6 +187,7 @@ function drawLine(x0, y0, x1, y1, color, emit, u){
     y0: y0 / h,
     x1: x1 / w,
     y1: y1 / h,
+    strokeWidth,
     color: color,
     user: current.user
   });
@@ -190,7 +209,7 @@ function onMouseUp(e){
   current.user.pX = e.clientX
   current.user.pY = e.clientY
 
-  drawLine(current.x, current.y, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, current.color, true, current.user);
+  drawLine(current.x, current.y, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, current.color, true, current.user, brushSize);
 }
 
 function onMouseMove(e){
@@ -219,7 +238,7 @@ function onMouseMove(e){
   current.user.pX = e.clientX
   current.user.pY = e.clientY
   
-  drawLine(current.x, current.y, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, current.color, true, current.user);
+  drawLine(current.x, current.y, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, current.color, true, current.user, brushSize);
   current.x = e.clientX||e.touches[0].clientX;
   current.y = e.clientY||e.touches[0].clientY;
 }
@@ -274,10 +293,9 @@ function onDrawingEvent(data){
     let user = document.getElementById(data.user.id)
     user.style.left = data.user.x + "%"
     user.style.top = data.user.y + "%"
-  
   }
-  
-  drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
+
+  drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color, false, null, data.strokeWidth);
 }
 
 // make the canvas fill its parent
@@ -322,4 +340,62 @@ socket.on("lockRoom", (data) => {
   }
 })
 
-document.addEventListener("contextmenu", e => e.preventDefault())
+// document.addEventListener("contextmenu", e => e.preventDefault())
+
+// allow brush size change
+
+brushSizeControl.addEventListener("input", () => {
+  let inputValue = parseInt(brushSizeControl.value);
+  brushSize = inputValue;
+
+  let h4 = document.querySelector(".brush h4")
+
+  h4.innerHTML = inputValue + "<span></span>"
+  h4.style.left = inputValue + "%"
+  h4.style.transform = "translateX(-50%) scale(" + (1+(inputValue/100)) + ")"
+  h4.style.display = "flex"
+
+  let brushVal = document.querySelector(".brush h4 span")
+  brushVal.style.backgroundColor = current.color
+
+  
+})
+
+// hide current user cursor when they are interacting with the toolbar buttons
+toolbarButtons.addEventListener("mouseenter", () => {
+  user.style.display = "none"
+});
+
+toolbarButtons.addEventListener("mouseleave", () => {
+  user.style.display = "block"
+});
+
+
+const pickr = Pickr.create({
+  el: '.toolbar .custom',
+  theme: 'nano', // or 'monolith', or 'nano'
+  useAsButton: true,
+  swatches: ["red", "green", "blue", '#F44336', '#E91E63', '#9C27B0', '#673AB7'],
+  default: "purple",
+  components: {
+      preview: true,
+      opacity: true,
+      hue: true,
+      interaction: {
+          hex: true,
+          rgba: true,
+          input: true,
+          cancel: false,
+          save: false
+      }
+  },
+});
+
+pickr.on("show", () => current.color = "pruple")
+
+pickr.on("change", (color) => {
+  let newColor = color.toHEXA().toString();
+  document.querySelector(".toolbar .custom").classList.replace(current.color, newColor)
+  current.color = newColor
+  // document.querySelector(".toolbar .custom").classList[1] = current.color;
+})

@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
   socket.on('drawing', (data) => {
     let updatedUserPositions = updateRoomCanvas(rid, data)
     let currentUser = getUserFromRoom(rid, uid)
-    
+
     if(currentUser){
       let ldP1 = new Date(currentUser.lastDraw);
 
@@ -61,7 +61,6 @@ io.on('connection', (socket) => {
         if(user.id !== currentUser.id){
           let dx = currentUser.x - user.x; 
           let dy = currentUser.y - user.y;
-
 
           let distance = Math.sqrt((dx * dx) + (dy * dy));
           let ldP2 = new Date(user.lastDraw);
