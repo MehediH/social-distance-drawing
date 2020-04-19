@@ -107,6 +107,14 @@ function lockRoom(rid){
   return room.locked
 }
 
+function updateCanvasBG(rid, color){
+  let room = rooms.find(room => room.id === rid);
+
+  if(!room){return;}
+
+  room.bg = color
+}
+
 module.exports = {
   getRooms,
   getRoom,
@@ -117,5 +125,6 @@ module.exports = {
   getRoomUsers,
   getUserFromRoom,
   resetRoomCanvas,
-  lockRoom
+  lockRoom,
+  updateCanvasBG
 };

@@ -16,6 +16,7 @@ let context = canvas.getContext('2d');
 let user = document.getElementsByClassName("user")[0];
 let clear = document.querySelector(".clear");
 let lock = document.querySelector(".lock");
+let fill = document.querySelector(".fill");
 let toolbarButtons = document.querySelector(".buttons");
 let brushSizeControl = document.getElementById("brushSize");
 let brushSize = 10;
@@ -31,7 +32,8 @@ socket.emit("joinRoom", {
   users: [],
   colls: "",
   created: new Date(),
-  locked: false
+  locked: false,
+  bg: "white"
 })
 
 
@@ -53,6 +55,7 @@ socket.on("newId", (data) => {
 
   // repaint existing canvas
   let c = room.canvas;
+  updateCanvasColor(room.bg);
   for(let i=0; i < c.length; i++){
     let d = c[i]
     // console.log(d)
@@ -401,3 +404,53 @@ pickr.on("change", (color) => {
   current.color = newColor
   // document.querySelector(".toolbar .custom").classList[1] = current.color;
 })
+
+// change canvas color
+const canvasPickr = Pickr.create({
+  el: '.toolbar .fill',
+  theme: 'nano', // or 'monolith', or 'nano'
+  useAsButton: true,
+  swatches: ["red", "green", "blue", '#F44336', '#E91E63', '#9C27B0', '#673AB7'],
+  default: "purple",
+  components: {
+      preview: true,
+      opacity: true,
+      hue: true,
+      interaction: {
+          hex: true,
+          rgba: true,
+          input: true,
+          cancel: true,
+          save: true
+      }
+  },
+  strings: {
+    save: "Set canvas background",
+    cancel: "Nevermind"
+  }
+});
+
+function updateCanvasColor(color){  
+  // update canvas bg
+  context.fillStyle = color;
+  context.fillRect(0, 0, canvas.width, canvas.height)
+
+  // updte eraser color to match new canvas bg
+  let oldEraser = document.querySelector(".eraser").classList[1];
+  document.querySelector(".eraser").classList.replace(oldEraser, color)
+}
+
+canvasPickr.on("save", (color) => {
+  let c = confirm("Updating the background will clear the canvas. Are you sure you want to do this?")
+
+  if(!c){return;}
+
+  color = color.toHEXA().toString();
+
+  updateCanvasColor(color)
+
+  socket.emit("canvasColorChange", color)
+})
+
+
+socket.on("canvasColorChange", color => updateCanvasColor(color))

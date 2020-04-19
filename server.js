@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom} = require("./utils/rooms");
+const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG} = require("./utils/rooms");
 
 const app = express();
 const server = http.createServer(app);
@@ -97,10 +97,16 @@ io.on('connection', (socket) => {
     socket.broadcast.to(rid).emit('clearCanvas', user)
   })
 
+  socket.on("canvasColorChange", (color) => {
+    updateCanvasBG(rid, color)
+    socket.broadcast.to(rid).emit('canvasColorChange', color)
+  })
+
   socket.on("lockRoom", (user) => {
     let status = lockRoom(rid)
     io.to(rid).emit("lockRoom", {user, status})
   })
+  
 
   socket.on("disconnect", () => {
     const user = userLeave(uid, rid)

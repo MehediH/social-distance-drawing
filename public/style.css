@@ -122,7 +122,7 @@ html, body {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
     height: 50px; }
-    .toolbar .colors .white {
+    .toolbar .colors .eraser {
       background-color: #fff; }
   .toolbar .eraser.active {
     background-color: #333; }
