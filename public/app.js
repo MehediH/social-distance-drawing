@@ -449,6 +449,8 @@ canvasPickr.on("save", (color) => {
 
   updateCanvasColor(color)
 
+  canvasPickr.hide();
+
   socket.emit("canvasColorChange", color)
 })
 
