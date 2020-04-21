@@ -340,8 +340,10 @@ socket.on("lockRoom", (data) => {
 
   if(status){
     lock.classList.add("locked")
+    lock.querySelector("span").innerText = "Unlock room"
   } else{
     lock.classList.remove("locked")
+    lock.querySelector("span").innerText = "Lock room"
   }
 })
 

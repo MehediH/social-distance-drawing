@@ -11,7 +11,8 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'VT323', monospace;
+  font-family: 'Nunito', sans-serif;
+
   overflow: hidden;  
 }
 
@@ -63,7 +64,9 @@ html, body {
 }
 
 .splash{
-  background: linear-gradient(1800deg,#d82881 10%,#8d27da);
+  background-image: url("./bg.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .welcome{
@@ -75,22 +78,42 @@ html, body {
   h1{
     font-size: 50px;
     margin: 0px;
+    padding-bottom: 20px;
   }
 
   label{
     display: block;
-    font-size: 30px;
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+
+  p.random{
+    font-size: 20px;
+    cursor: pointer; 
+    transition: 0.3s color ease-in-out;
+    margin-top: 0px;
+    color: #FF5678;
+
+    &:hover{
+      color: #333;
+    }
   }
 
   input{
-    margin: 20px 0;
+    margin-bottom: 20px;
     width: 100%;
     height: 50px;
+    border: 3px solid #000;
     border-radius: 50px;
-    padding: 0 20px;
-    border: 0;
+    padding: 10px 20px;
     outline: 0;
-    font-size: 25px;
+    font-size: 22px;
+    transition: 0.3s border ease-in-out;
+
+    &:focus, &:active{
+      border: 3px solid #FF5678;
+    }
   }
 
   button{
@@ -102,11 +125,10 @@ html, body {
     outline: 0;
     font-size: 20px;
     cursor: pointer;
-    border: 5px solid transparent;
-    transition: 0.3s all ease-in-out;
+    transition: 0.3s background ease-in-out;
 
     &:hover{
-      border: 5px solid red;
+      background-color: #FF5678;
     }
   }
 }
@@ -195,16 +217,34 @@ html, body {
   .btn{
     margin-left: 20px;
     transition: 0.3s all ease-in-out;
-    border-radius: 50px;
-    width: 50px;
     height: 50px;
     text-align: center;
-    background-color: #fff;
+    background-color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
-    border: 3px solid transparent;
+    border-radius: 50px;
+    
+    div{
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+      border-radius: 50px 0px 0px 50px;
+      
+    }
+
+    span{
+      background-color: #fff;
+      display: block;
+      height: 50px;
+      line-height: 50px;
+      padding-right: 20px;
+      border-radius: 0px 50px 50px 0px;
+    }
 
     svg{
       width: 20px;
@@ -222,9 +262,12 @@ html, body {
   }
 
   .locked{
-    background-color: #333333;
-    border: 5px solid #333333;
+    
     color: #fff;
+
+    span, div{
+      background-color: #333333;
+    }
 
     .feather-lock{
       display: block;

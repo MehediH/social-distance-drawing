@@ -11,7 +11,7 @@
   "scripts": {
     "start": "node server",
     "server": "nodemon server",
-    "css": "node-sass -w . -o public/",
+    "css": "node-sass -w style.scss public/style.css --output-style=compressed",
     "dev": "npm run server && npm run css"
   },
   "author": "Mehedi Hassan",
