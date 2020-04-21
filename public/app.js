@@ -19,7 +19,10 @@ let lock = document.querySelector(".lock");
 let fill = document.querySelector(".fill");
 let toolbarButtons = document.querySelector(".buttons");
 let brushSizeControl = document.getElementById("brushSize");
+let playerList = document.querySelector(".player-count .dropdown ul");
+
 let brushSize = 10;
+
 
 brushSizeControl.value = brushSize;
 
@@ -68,9 +71,9 @@ socket.on("newId", (data) => {
 
 
 socket.on('roomUsers', (users) => {
-  document.querySelector(".player-count").innerText = users.length;
-
+  document.querySelector(".player-count span").innerText = users.length;
   // TODO: add visual for showing connected users
+  playerList.innerHTML = `${users.map(user => `<li><span style='background-color: ${user.avatar}'></span><p>${user.userName}</p></li>`).join("")}`
 });
 
 // add a new player to DOM
@@ -459,5 +462,5 @@ canvasPickr.on("save", (color) => {
   socket.emit("canvasColorChange", color)
 })
 
-
+// update canvas color 
 socket.on("canvasColorChange", color => updateCanvasColor(color))
