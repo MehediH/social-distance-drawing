@@ -5,8 +5,8 @@ function getRooms(){
 }
 
 // Join user to chat
-function userJoin(id, avatar, x, y, pX, pY, room) {
-  const user = { id, avatar, x, y, pX, pY, lastDraw: ""};
+function userJoin(id, userName, avatar, x, y, pX, pY, room) {
+  const user = { id, userName, avatar, x, y, pX, pY, lastDraw: ""};
 
   const foundRoom = rooms.find(r => r.id === room.id);
 

@@ -63,10 +63,21 @@ html, body {
   }
 }
 
+@keyframes outwest {
+  0% {
+    background-size: 180%;
+  }
+
+  100%{
+    background-size: 100%;
+  }
+}
+
 .splash{
   background-image: url("./bg.svg");
   background-repeat: no-repeat;
   background-size: cover;
+  animation: outwest 1s 0s forwards ease-in-out;
 }
 
 .welcome{

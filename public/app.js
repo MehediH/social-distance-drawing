@@ -1,10 +1,10 @@
 
 
-const { room } = Qs.parse(location.search, {
+const { room, name} = Qs.parse(location.search, {
   ignoreQueryPrefix: true
 });
 
-if(!room){
+if(!room || !name){
   window.location = "/"
 }
 
@@ -27,13 +27,16 @@ feather.replace() // load icons
 
 // request to join room
 socket.emit("joinRoom", {
-  id: room,
-  canvas: [],
-  users: [],
-  colls: "",
-  created: new Date(),
-  locked: false,
-  bg: "white"
+  room: {
+    id: room,
+    canvas: [],
+    users: [],
+    colls: "",
+    created: new Date(),
+    locked: false,
+    bg: "white"
+  },
+  userName: name
 })
 
 

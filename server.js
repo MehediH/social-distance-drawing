@@ -16,8 +16,9 @@ io.on('connection', (socket) => {
   let uid;
   let rid;
 
-  socket.on("joinRoom", (room) => {
-    
+  socket.on("joinRoom", (data) => {
+    let {room, userName} = data;
+
     if(getRoom(room.id) === undefined){ // if a room doesn't exist, we make a new one
       room = createRoom(room)
     } else{
@@ -33,7 +34,7 @@ io.on('connection', (socket) => {
 
     socket.join(room.id)
 
-    let user = userJoin(socket.id, "#"+((1<<24)*Math.random()|0).toString(16), 0, 0, 0, 0, room)
+    let user = userJoin(socket.id, userName, "#"+((1<<24)*Math.random()|0).toString(16), 0, 0, 0, 0, room)
 
     uid = socket.id;
 
@@ -53,7 +54,6 @@ io.on('connection', (socket) => {
 
     if(currentUser){
       let ldP1 = new Date(currentUser.lastDraw);
-
 
       for(user in updatedUserPositions){  
         user = updatedUserPositions[user];

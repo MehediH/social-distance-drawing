@@ -49,11 +49,11 @@
         let getIndex = (l) =>  Math.floor(Math.random() * (l - 0)) + 0;
 
         // automatically set username
-        document.querySelector("input[name='name'").value = names[getIndex(names.length)] + "-" + adjs[getIndex(adjs.length)] + "-" + animals[getIndex(animals.length)]
+        document.querySelector("input[name='name'").value = adjs[getIndex(adjs.length)] + "-" + animals[getIndex(animals.length)];
 
         
-        let randomRoom = adjs[getIndex(adjs.length)] + "-" + animals[getIndex(animals.length)];
-        random.innerText = "...or join " + randomRoom;
+        let randomRoom = names[getIndex(names.length)] + "-" + adjs[getIndex(adjs.length)] + "-" + animals[getIndex(animals.length)];
+        random.innerText = "...or join room " + randomRoom;
 
         random.addEventListener("click", () => {
             document.querySelector("input[name='room'").value = randomRoom;
