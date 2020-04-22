@@ -73,7 +73,7 @@ socket.on("newId", (data) => {
 socket.on('roomUsers', (users) => {
   document.querySelector(".player-count span").innerText = users.length;
   // TODO: add visual for showing connected users
-  playerList.innerHTML = `${users.map(user => `<li><span style='background-color: ${user.avatar}'></span><p>${user.userName}</p></li>`).join("")}`
+  // playerList.innerHTML = `${users.map(user => `<li><span style='background-color: ${user.avatar}'></span><p>${user.userName}</p></li>`).join("")}`
 });
 
 // add a new player to DOM
@@ -88,6 +88,8 @@ socket.on("newUser", (user) => {
     newPlayer.style.display = "none";
     document.body.appendChild(newPlayer)
   }
+
+  showMessage(`<li class="status"><p>${user.userName} joined the room</p></li>`, false)
 })
 
 socket.on("colluded", (collision) => {
@@ -375,13 +377,17 @@ brushSizeControl.addEventListener("input", () => {
 })
 
 // hide current user cursor when they are interacting with the toolbar buttons
-toolbarButtons.addEventListener("mouseenter", () => {
-  user.style.display = "none"
-});
+function toggleMouse(elem){
+  elem.addEventListener("mouseenter", () => {
+    user.style.display = "none"
+  });
+  
+  elem.addEventListener("mouseleave", () => {
+    user.style.display = "block"
+  }); 
+}
 
-toolbarButtons.addEventListener("mouseleave", () => {
-  user.style.display = "block"
-});
+toggleMouse(toolbarButtons)
 
 
 const pickr = Pickr.create({
@@ -464,3 +470,82 @@ canvasPickr.on("save", (color) => {
 
 // update canvas color 
 socket.on("canvasColorChange", color => updateCanvasColor(color))
+
+// user box open
+let playerCount = document.querySelector(".player-count")
+playerCount.addEventListener("click", (e) => {
+  if(!e.target.closest(".dropdown")){
+    playerCount.classList.toggle("open")
+    playerCount.classList.remove("show-unread")
+  }
+})
+
+// close user box
+document.addEventListener("click", (e) => {
+  if(!e.target.closest(".player-count")){
+    if(playerCount.classList.contains("open")){
+      playerCount.classList.remove("open")
+    }
+  }
+})
+
+// add invite link
+let shareLinkBox = document.querySelector(".shareLink")
+shareLinkBox.value = window.location.href
+
+shareLinkBox.addEventListener("focus", (e) => {
+  shareLinkBox.select();
+})
+
+shareLinkBox.addEventListener("click", (e) => {
+  shareLinkBox.select();
+})
+
+shareLinkBox.addEventListener("mouseup", (e) => {
+  e.preventDefault();
+})
+
+// chat input box
+let inputBox = document.querySelector(".chat-input input")
+let msgSend = document.querySelector(".chat-send")
+let msgCont = document.querySelector(".player-count .inner")
+
+function sendMessage(){
+  if(!inputBox.value){
+    return;
+  }
+
+  socket.emit("chatMessage", {
+    uid: current.user.id,
+    userName: current.user.userName,
+    accent: current.user.avatar,
+    text: inputBox.value
+  })
+
+  inputBox.value = "";
+  inputBox.focus();
+}
+
+msgSend.addEventListener("click", () => sendMessage())
+
+inputBox.addEventListener("keydown", (e) => e.keyCode === 13 ? sendMessage() : null)
+
+socket.on("rcvMessage", (message) => {
+  let user = document.getElementById(message.uid)
+
+  if(!user){
+    return;
+  }
+
+  showMessage(`<li class="${message.uid === current.user.id ? "own": ""}"><p class="msg" style="border-bottom: 5px solid ${message.accent}"><em>${message.userName}</em><span>${message.text}</span></p></li>`)
+})
+
+function showMessage(elem, indicate=true){
+  playerList.innerHTML += elem;
+
+  msgCont.scrollTop = msgCont.scrollHeight
+
+  if(indicate && !playerCount.classList.contains("open")){
+    playerCount.classList.add("show-unread")
+  }
+}

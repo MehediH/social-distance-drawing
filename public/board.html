@@ -27,10 +27,22 @@
       <div class="btn fill" title="Fill canvas"><div><i data-feather="droplet"></i></div><span>Background</span></div>
       <div class="btn clear" title="Clear canvas"><div><i data-feather="trash-2"></i></div><span>Clear</span></div>
       <div class="btn lock" title="Lock room"><div><i data-feather="lock"></i><i data-feather="unlock"></i></div><span>Lock room</span></div>
-      <div class="btn player-count has-dropdown" title="Players in the room">
-        <a href="#"><div><i data-feather="users"></i></div><span>0</span></a>
+    
+     
+      <div class="btn player-count has-dropdown open" title="Players in the room">
+        <a href="#"><div><i data-feather="message-circle"></i></div><span>0</span><em class="unread"></em></a>
         <div class="dropdown">
-          <ul></ul>
+          <div class="inner">
+            <p>Share the link below to invite others!</p>
+            <input type="text" value="" class="shareLink"/>
+            <ul></ul>
+          </div>
+          <div class="chat-input">
+            <input type="text" value="" placeholder="Say something"/>
+            <div class="chat-send">
+              <i data-feather="send"></i>
+            </div>
+          </div>
         </div>
       </div>
     </div>

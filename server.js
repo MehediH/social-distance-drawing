@@ -34,13 +34,16 @@ io.on('connection', (socket) => {
 
     socket.join(room.id)
 
-    let user = userJoin(socket.id, userName, "#"+((1<<24)*Math.random()|0).toString(16), 0, 0, 0, 0, room)
+    // random color
+    let rc = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
+
+    let user = userJoin(socket.id, userName, rc, 0, 0, 0, 0, room)
 
     uid = socket.id;
 
     socket.emit("newId", {user, room: getRoom(room.id)}) // tell user about their updated details
 
-    socket.broadcast.to(room.id).emit("newUser", user) // tell everyone except user about the new player
+    io.to(room.id).emit("newUser", user) // tell everyone except user about the new player
 
     // send players and room info
     io.to(room.id).emit("roomUsers", getRoomUsers(room.id))
@@ -105,6 +108,10 @@ io.on('connection', (socket) => {
   socket.on("lockRoom", (user) => {
     let status = lockRoom(rid)
     io.to(rid).emit("lockRoom", {user, status})
+  })
+
+  socket.on("chatMessage", (message) => {
+    io.to(rid).emit("rcvMessage", message)
   })
   
 
