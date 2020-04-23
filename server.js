@@ -9,6 +9,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
+const maxRoomLimit = 10;
+
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
 
@@ -29,6 +31,9 @@ io.on('connection', (socket) => {
 
     if(room.locked){
       socket.emit("joinFail", "Room is locked")
+      return;
+    } else if(room.users.length+1 > maxRoomLimit){
+      socket.emit("joinFail", "Room is full with 10 players. Try later :)")
       return;
     }
 
@@ -69,20 +74,20 @@ io.on('connection', (socket) => {
           let ldP2 = new Date(user.lastDraw);
 
           let timeDiff = Math.abs(ldP2-ldP1) / 1000
-          
-
-          if (distance < 8 && timeDiff < 2) {
-            resetRoomCanvas(rid)
+          // && timeDiff < 2)
+          if (distance < 8) {
+            let room = resetRoomCanvas(rid)
 
             let collision = {
               p1: currentUser,
               p2: user,
               distance,
               dx,
-              dy
+              dy,
+              bg: room.bg
             }
 
-            io.to(rid).emit("colluded", collision)
+            io.to(rid).emit("collided", collision)
           }
         }
       }

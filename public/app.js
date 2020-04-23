@@ -30,9 +30,10 @@ feather.replace() // load icons
 
 let id = "2412"
 
+let getIndex = (l) =>  Math.floor(Math.random() * (l - 0)) + 0; // gets a random integer
+
 socket.on("connect", () => {
   if(!name){ // if user doesn't have a name, we give them a random one
-    let getIndex = (l) =>  Math.floor(Math.random() * (l - 0)) + 0;
     let adjs = ["alizarin","amaranth","amber","amethyst","apricot","aqua","aquamarine","asparagus","auburn","azure","beige","bistre","black","blue","blue-green","blue-violet","bondi-blue","brass","bronze","brown","buff","burgundy","camouflage-green","cardinal","carmine","carrot-orange","cerise","cerulean","champagne","charcoal","chartreuse","cherry-blossom-pink","chestnut","chocolate","cinnabar","cinnamon","cobalt","copper","coral","corn","cornflower","cream","crimson","cyan","dandelion","denim","ecru","emerald","eggplant","fern-green","firebrick","flax","forest-green","french-rose","fuchsia","gamboge","gold","goldenrod","green","grey","han-purple","harlequin","heliotrope","hollywood-cerise","indigo","ivory","jade","kelly-green","khaki","lavender","lawn-green","lemon","lemon-chiffon","lilac","lime","lime-green","linen","magenta","magnolia","malachite","maroon","mauve","midnight-blue","mint-green","misty-rose","moss-green","mustard","myrtle","navajo-white","navy-blue","ochre","office-green","olive","olivine","orange","orchid","papaya-whip","peach","pear","periwinkle","persimmon","pine-green","pink","platinum","plum","powder-blue","puce","prussian-blue","psychedelic-purple","pumpkin","purple","quartz-grey","raw-umber","razzmatazz","red","robin-egg-blue","rose","royal-blue","royal-purple","ruby","russet","rust","safety-orange","saffron","salmon","sandy-brown","sangria","sapphire","scarlet","school-bus-yellow","sea-green","seashell","sepia","shamrock-green","shocking-pink","silver","sky-blue","slate-grey","smalt","spring-bud","spring-green","steel-blue","tan","tangerine","taupe","teal","terra-cotta","thistle","titanium-white","tomato","turquoise","tyrian-purple","ultramarine","van-dyke-brown","vermilion","violet","viridian","wheat","white","wisteria","yellow","zucchini"];
 
     name = "wild-" + adjs[getIndex(adjs.length)]
@@ -107,11 +108,13 @@ socket.on("newUser", (user) => {
   showMessage(`<li class="status"><p>${user.userName} joined the room</p></li>`, false)
 })
 
-socket.on("colluded", (collision) => {
-  document.body.classList.add("colluded")
-  context.clearRect(0, 0, canvas.width, canvas.height);
+socket.on("collided", (collision) => {
+  document.body.classList.add("collided")
+
+  updateCanvasColor(collision.bg);
+
   setTimeout(() => {
-    document.body.classList.remove("colluded")
+    document.body.classList.remove("collided")
   }, 1000);
 })
 
@@ -467,6 +470,8 @@ function updateCanvasColor(color){
   // updte eraser color to match new canvas bg
   let oldEraser = document.querySelector(".eraser").classList[1];
   document.querySelector(".eraser").classList.replace(oldEraser, color)
+
+  document.querySelector(".black").click();
 }
 
 canvasPickr.on("save", (color) => {
@@ -564,3 +569,6 @@ function showMessage(elem, indicate=true){
     playerCount.classList.add("show-unread")
   }
 }
+
+let thingsToDraw = ["aircraft carrier", "airplane", "alarm clock", "ambulance", "angel", "animal migration", "ant", "anvil", "apple", "arm", "asparagus", "axe", "backpack", "banana", "bandage", "barn", "baseball", "baseball bat", "basket", "basketball", "bat", "bathtub", "beach", "bear", "beard", "bed", "bee", "belt", "bench", "bicycle", "binoculars", "bird", "birthday cake", "blackberry", "blueberry", "book", "boomerang", "bottlecap", "bowtie", "bracelet", "brain", "bread", "bridge", "broccoli", "broom", "bucket", "bulldozer", "bus", "bush", "butterfly", "cactus", "cake", "calculator", "calendar", "camel", "camera", "camouflage", "campfire", "candle", "cannon", "canoe", "car", "carrot", "castle", "cat", "ceiling fan", "cello", "cell phone", "chair", "chandelier", "church", "circle", "clarinet", "clock", "cloud", "coffee cup", "compass", "computer", "cookie", "cooler", "couch", "cow", "crab", "crayon", "crocodile", "crown", "cruise ship", "cup", "diamond", "dishwasher", "diving board", "dog", "dolphin", "donut", "door", "dragon", "dresser", "drill", "drums", "duck", "dumbbell", "ear", "elbow", "elephant", "envelope", "eraser", "eye", "eyeglasses", "face", "fan", "feather", "fence", "finger", "fire hydrant", "fireplace", "firetruck", "fish", "flamingo", "flashlight", "flip flops", "floor lamp", "flower", "flying saucer", "foot", "fork", "frog", "frying pan", "garden", "garden hose", "giraffe", "goatee", "golf club", "grapes", "grass", "guitar", "hamburger", "hammer", "hand", "harp", "hat", "headphones", "hedgehog", "helicopter", "helmet", "hexagon", "hockey puck", "hockey stick", "horse", "hospital", "hot air balloon", "hot dog", "hot tub", "hourglass", "house", "house plant", "hurricane", "ice cream", "jacket", "jail", "kangaroo", "key", "keyboard", "knee", "knife", "ladder", "lantern", "laptop", "leaf", "leg", "light bulb", "lighter", "lighthouse", "lightning", "line", "lion", "lipstick", "lobster", "lollipop", "mailbox", "map", "marker", "matches", "megaphone", "mermaid", "microphone", "microwave", "monkey", "moon", "mosquito", "motorbike", "mountain", "mouse", "moustache", "mouth", "mug", "mushroom", "nail", "necklace", "nose", "ocean", "octagon", "octopus", "onion", "oven", "owl", "paintbrush", "paint can", "palm tree", "panda", "pants", "paper clip", "parachute", "parrot", "passport", "peanut", "pear", "peas", "pencil", "penguin", "piano", "pickup truck", "picture frame", "pig", "pillow", "pineapple", "pizza", "pliers", "police car", "pond", "pool", "popsicle", "postcard", "potato", "power outlet", "purse", "rabbit", "raccoon", "radio", "rain", "rainbow", "rake", "remote control", "rhinoceros", "rifle", "river", "roller coaster", "rollerskates", "sailboat", "sandwich", "saw", "saxophone", "school bus", "scissors", "scorpion", "screwdriver", "sea turtle", "see saw", "shark", "sheep", "shoe", "shorts", "shovel", "sink", "skateboard", "skull", "skyscraper", "sleeping bag", "smiley face", "snail", "snake", "snorkel", "snowflake", "snowman", "soccer ball", "sock", "speedboat", "spider", "spoon", "spreadsheet", "square", "squiggle", "squirrel", "stairs", "star", "steak", "stereo", "stethoscope", "stitches", "stop sign", "stove", "strawberry", "streetlight", "string bean", "submarine", "suitcase", "sun", "swan", "sweater", "swing set", "sword", "syringe", "table", "teapot", "teddy-bear", "telephone", "television", "tennis racquet", "tent", "The Eiffel Tower", "The Great Wall of China", "The Mona Lisa", "tiger", "toaster", "toe", "toilet", "tooth", "toothbrush", "toothpaste", "tornado", "tractor", "traffic light", "train", "tree", "triangle", "trombone", "truck", "trumpet", "t-shirt", "umbrella", "underwear", "van", "vase", "violin", "washing machine", "watermelon", "waterslide", "whale", "wheel", "windmill", "wine bottle", "wine glass", "wristwatch", "yoga", "zebra", "zigzag"]
+// alert(thingsToDraw[getIndex(thingsToDraw.length)])

@@ -95,6 +95,8 @@ function resetRoomCanvas(rid){
   if(!room){return;}
 
   room.canvas = []
+
+  return room;
 }
 
 function lockRoom(rid){
