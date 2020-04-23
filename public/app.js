@@ -4,7 +4,7 @@ const { room, name} = Qs.parse(location.search, {
   ignoreQueryPrefix: true
 });
 
-if(!room || !name){
+if(!room){
   window.location = "/"
 }
 
@@ -28,20 +28,30 @@ brushSizeControl.value = brushSize;
 
 feather.replace() // load icons
 
-// request to join room
-socket.emit("joinRoom", {
-  room: {
-    id: room,
-    canvas: [],
-    users: [],
-    colls: "",
-    created: new Date(),
-    locked: false,
-    bg: "white"
-  },
-  userName: name
+let id = "2412"
+
+socket.on("connect", () => {
+  id = socket.id.substr(0, 5).replace(/[^a-z0-9]/gi,'').toLowerCase()
+  
+  joinRoom(name ? name : "anon-" + id)
 })
 
+
+// request to join room
+function joinRoom(userName){
+  socket.emit("joinRoom", {
+    room: {
+      id: room,
+      canvas: [],
+      users: [],
+      colls: "",
+      created: new Date(),
+      locked: false,
+      bg: "white"
+    },
+    userName
+  })
+}
 
 // update user id for current player
 socket.on("newId", (data) => {
@@ -491,7 +501,7 @@ document.addEventListener("click", (e) => {
 
 // add invite link
 let shareLinkBox = document.querySelector(".shareLink")
-shareLinkBox.value = window.location.href
+shareLinkBox.value = window.location.href.split(/[?#]/)[0] + "?room=" + room;
 
 shareLinkBox.addEventListener("focus", (e) => {
   shareLinkBox.select();

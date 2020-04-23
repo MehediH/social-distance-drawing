@@ -12,7 +12,7 @@
     "start": "node server",
     "server": "nodemon server",
     "css": "node-sass -w style.scss public/style.css --output-style=compressed",
-    "dev": "concurrently \"npm run server\" \"npm run css\""
+    "dev": "concurrently \"npm run start\" \"npm run css\""
   },
   "author": "Mehedi Hassan",
   "license": "MIT",
