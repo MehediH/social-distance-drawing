@@ -74,8 +74,8 @@ io.on('connection', (socket) => {
           let ldP2 = new Date(user.lastDraw);
 
           let timeDiff = Math.abs(ldP2-ldP1) / 1000
-          // && timeDiff < 2)
-          if (distance < 8) {
+
+          if (distance < 8 && timeDiff < 2) {
             let room = resetRoomCanvas(rid)
 
             let collision = {

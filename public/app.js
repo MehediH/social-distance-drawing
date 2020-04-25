@@ -113,6 +113,8 @@ socket.on("collided", (collision) => {
 
   updateCanvasColor(collision.bg);
 
+  showMessage(`<li class="status"><p>${collision.p1.userName} && ${collision.p2.userName} collided</p></li>`, false)
+
   setTimeout(() => {
     document.body.classList.remove("collided")
   }, 1000);
