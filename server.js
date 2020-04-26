@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    socket.broadcast.emit("playerDisconnect", user.id)
+    socket.broadcast.emit("playerDisconnect", user)
 
     // send players and room info
     io.to(rid).emit("roomUsers", getRoomUsers(rid))
