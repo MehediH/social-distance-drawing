@@ -51,9 +51,11 @@ function joinRoom(userName){
       canvas: [],
       users: [],
       colls: "",
+      lastCollision: new Date(),
       created: new Date(),
       locked: false,
-      bg: "white"
+      bg: "white",
+      ranks: new Map()
     },
     userName
   })

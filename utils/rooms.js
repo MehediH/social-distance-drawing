@@ -89,12 +89,16 @@ function getUserFromRoom(rid, uid){
   return room.users.find(user => user.id === uid)
 }
 
-function resetRoomCanvas(rid){
+function resetRoomCanvas(rid, coll){
   let room = rooms.find(room => room.id === rid);
 
   if(!room){return;}
 
   room.canvas = []
+
+  if(coll){
+    room.lastCollision = coll;
+  }
 
   return room;
 }

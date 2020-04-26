@@ -61,36 +61,7 @@ io.on('connection', (socket) => {
     let currentUser = getUserFromRoom(rid, uid)
 
     if(currentUser){
-      let ldP1 = new Date(currentUser.lastDraw);
-
-      for(user in updatedUserPositions){  
-        user = updatedUserPositions[user];
-
-        if(user.id !== currentUser.id){
-          let dx = currentUser.x - user.x; 
-          let dy = currentUser.y - user.y;
-
-          let distance = Math.sqrt((dx * dx) + (dy * dy));
-          let ldP2 = new Date(user.lastDraw);
-
-          let timeDiff = Math.abs(ldP2-ldP1) / 1000
-
-          if (distance < 8 && timeDiff < 2) {
-            let room = resetRoomCanvas(rid)
-
-            let collision = {
-              p1: currentUser,
-              p2: user,
-              distance,
-              dx,
-              dy,
-              bg: room.bg
-            }
-
-            io.to(rid).emit("collided", collision)
-          }
-        }
-      }
+      checkCollisions(currentUser, updatedUserPositions)
     }
 
     socket.broadcast.to(rid).emit('drawing', data)
@@ -132,6 +103,54 @@ io.on('connection', (socket) => {
     // send players and room info
     io.to(rid).emit("roomUsers", getRoomUsers(rid))
   })
+
+  function checkCollisions(currentUser, updatedUserPositions){
+    // collision grace for everyone in general
+    let {lastCollision} = getRoom(rid)
+    
+    let timeNow = new Date();
+    lastCollision = new Date(lastCollision);
+    let lastCollDiff = Math.abs(timeNow-lastCollision) / 1000
+
+    if(lastCollDiff < 5){
+      return;
+    }
+
+    // if there's not been a collision in the last 5 seconds
+    // we start collision detection
+    let ldP1 = new Date(currentUser.lastDraw);
+
+    for(user in updatedUserPositions){  
+      user = updatedUserPositions[user];
+
+      if(user.id !== currentUser.id){
+        let dx = currentUser.x - user.x; 
+        let dy = currentUser.y - user.y;
+
+        let distance = Math.sqrt((dx * dx) + (dy * dy));
+        let ldP2 = new Date(user.lastDraw);
+
+        let timeDiff = Math.abs(ldP2-ldP1) / 1000
+
+        if (distance < 8 && timeDiff < 2) {
+          let room = resetRoomCanvas(rid, new Date())
+
+          let collision = {
+            p1: currentUser,
+            p2: user,
+            distance,
+            dx,
+            dy,
+            bg: room.bg
+          }
+
+
+
+          io.to(rid).emit("collided", collision)
+        }
+      }
+    }
+  }
 });
 
 const PORT = process.env.PORT || 3000;
