@@ -107,7 +107,7 @@ io.on('connection', (socket) => {
 
     let timer = Math.abs(new Date()-new Date(game.timer)) / 1000
 
-    if(timer < 3){
+    if(timer < 60){
       socket.emit("joinGame", game)
       return;
     }
@@ -133,6 +133,10 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on("justDraw", () => {
+    disableGame(rid)
+  })
+
   socket.on("disconnect", () => {
     const user = userLeave(uid, rid)
 
@@ -146,9 +150,7 @@ io.on('connection', (socket) => {
     io.to(rid).emit("roomUsers", getRoomUsers(rid))
   })
 
-  socket.on("justDraw", () => {
-    disableGame(rid)
-  })
+  
 
   function checkCollisions(currentUser, updatedUserPositions){
     // collision grace for everyone in general

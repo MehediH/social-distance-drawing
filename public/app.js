@@ -684,7 +684,7 @@ socket.on("skipRoundWait", () => {
 // game
 function startGame(game){
   let timer = Math.abs(new Date()-new Date(game.timer)) / 1000;
-  startTimer(3-timer, document.querySelector(".timer span"), game.round)
+  startTimer(60-timer, document.querySelector(".timer span"), game.round)
   document.querySelector(".timer em").innerText = `(round ${game.round})`
 
   let currentlyDrawing = document.querySelector(".currently-drawing");
