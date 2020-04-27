@@ -41,7 +41,9 @@ socket.on("connect", () => {
   if(!name){ // if user doesn't have a name, we give them a random one
     let adjs = ["alizarin","amaranth","amber","amethyst","apricot","aqua","aquamarine","asparagus","auburn","azure","beige","bistre","black","blue","blue-green","blue-violet","bondi-blue","brass","bronze","brown","buff","burgundy","camouflage-green","cardinal","carmine","carrot-orange","cerise","cerulean","champagne","charcoal","chartreuse","cherry-blossom-pink","chestnut","chocolate","cinnabar","cinnamon","cobalt","copper","coral","corn","cornflower","cream","crimson","cyan","dandelion","denim","ecru","emerald","eggplant","fern-green","firebrick","flax","forest-green","french-rose","fuchsia","gamboge","gold","goldenrod","green","grey","han-purple","harlequin","heliotrope","hollywood-cerise","indigo","ivory","jade","kelly-green","khaki","lavender","lawn-green","lemon","lemon-chiffon","lilac","lime","lime-green","linen","magenta","magnolia","malachite","maroon","mauve","midnight-blue","mint-green","misty-rose","moss-green","mustard","myrtle","navajo-white","navy-blue","ochre","office-green","olive","olivine","orange","orchid","papaya-whip","peach","pear","periwinkle","persimmon","pine-green","pink","platinum","plum","powder-blue","puce","prussian-blue","psychedelic-purple","pumpkin","purple","quartz-grey","raw-umber","razzmatazz","red","robin-egg-blue","rose","royal-blue","royal-purple","ruby","russet","rust","safety-orange","saffron","salmon","sandy-brown","sangria","sapphire","scarlet","school-bus-yellow","sea-green","seashell","sepia","shamrock-green","shocking-pink","silver","sky-blue","slate-grey","smalt","spring-bud","spring-green","steel-blue","tan","tangerine","taupe","teal","terra-cotta","thistle","titanium-white","tomato","turquoise","tyrian-purple","ultramarine","van-dyke-brown","vermilion","violet","viridian","wheat","white","wisteria","yellow","zucchini"];
 
-    name = "wild-" + adjs[getIndex(adjs.length)]
+    let tempName = "wild-" + adjs[getIndex(adjs.length)]
+    joinRoom(tempName)
+    return;
   }
   
   joinRoom(name)
@@ -531,6 +533,12 @@ playerCount.addEventListener("click", (e) => {
   }
 })
 
+document.addEventListener("keydown", (e) => {
+  if(e.keyCode === 27 && playerCount.classList.contains("open")){
+    playerCount.classList.remove("open")
+  }
+})
+
 // close user box
 // document.addEventListener("click", (e) => {
 //   if(!e.target.closest(".player-count")){
@@ -610,9 +618,17 @@ function showMessage(elem, indicate=true){
 // show first run dialog
 function firstRun(show){
   if(show){
+    if(!name){
+      firstRnContent.innerHTML += "<label>Set your name (we automagically picked one for you)</label><input tpye='text' placeholder='Enter your name' value='" + current.user.userName + "' class='updateName'/>"
+      updateNameHandler(document.querySelector(".modal__content .updateName"), undefined, () => {
+        document.querySelector(".start-fr").focus();
+      })
+    }
+
     MicroModal.show('first-run', {
       disableScroll: true,
-      disableFocus: true
+      disableFocus: true,
+      onClose: () => firstRnPhase === 1 ? justDraw() : socket.emit("joinGame")
     });
     document.querySelector(".timer").style = "display: flex !important;"
   } else{
@@ -620,11 +636,46 @@ function firstRun(show){
   }
 }
 
+function updateNameHandler(elem, triggerElem, onEnter){
+  if(triggerElem){
+    triggerElem.addEventListener("click", () => {
+      socket.emit("updateName", elem.value.replace(/\s/g, ''))
+    })
+  }
+
+  elem.addEventListener("keyup", (e) => {
+    if(e.keyCode === 13){
+      e.preventDefault();
+      onEnter();
+    }
+  })
+}
+
+socket.on("updatedUserName", updateDetails => {
+  let {oldName, user} = updateDetails;
+
+  if(current.user.id === user.id){
+    current.user = user;
+  }
+  
+  showMessage(`<li class="status"><p>${oldName} changed their name to ${user.userName}</p></li>`, false)
+
+  let firstRnPlayers = document.querySelector(".firstRunPlayersList")
+  if(firstRnPlayers){
+    firstRnPlayers.innerHTML += `<li>${oldName} changed their name to ${user.userName}</li>`
+  }
+})
 
 // user wnats to continue
 firstRnStartBtn.addEventListener("click", () => {
   let userCount = document.querySelector(".player-count span").innerText;
-  
+  let nameInput = document.querySelector(".modal__content .updateName");
+
+  // if user enters name on first run phase
+  if(firstRnPhase === 1 && nameInput != "" && nameInput.value.replace(/\s/g, '') !== current.user.userName){
+    socket.emit("updateName", nameInput.value.replace(/\s/g, ''))
+  }
+
   if(firstRnPhase === 1 && parseInt(userCount) === 1){
     firstRnPhase += 1;
 

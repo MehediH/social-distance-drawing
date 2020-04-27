@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG, startGame, nextRound, votePlayer, getGameVotesPerRound, disableGame} = require("./utils/rooms");
+const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG, startGame, nextRound, votePlayer, getGameVotesPerRound, disableGame, updateName} = require("./utils/rooms");
 
 const app = express();
 const server = http.createServer(app);
@@ -138,6 +138,11 @@ io.on('connection', (socket) => {
 
   socket.on("justDraw", () => {
     disableGame(rid)
+  })
+
+  socket.on("updateName", (newName) => {
+    let data = updateName(uid, rid, newName)
+    io.to(rid).emit("updatedUserName", data)
   })
 
   socket.on("disconnect", () => {

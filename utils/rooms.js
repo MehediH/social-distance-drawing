@@ -208,6 +208,21 @@ function disableGame(rid){
   room.game.justDraw = true;
 }
 
+function updateName(uid, rid, newName){
+  const room = rooms.find(r => r.id === rid);
+
+  if(!room){return;}
+
+  const user = room.users.find(user => user.id === uid)
+
+  if(!user){return;}
+
+  let oldName = user.userName;
+  user.userName = newName;
+
+  return {oldName, user};
+}
+
 module.exports = {
   getRooms,
   getRoom,
@@ -224,5 +239,6 @@ module.exports = {
   nextRound,
   votePlayer,
   getGameVotesPerRound,
-  disableGame
+  disableGame,
+  updateName
 };
