@@ -192,7 +192,7 @@ html, body {
 
   .colors {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 20px;
     height: 50px;
 
@@ -229,16 +229,35 @@ html, body {
 
   .timer{
     display: none !important;
+    transition: 0.3s all ease-in-out;
+    cursor: default;
     
     span{
-      padding-right: 5px !important;
+      display: grid !important;
+      grid-template-rows: 1fr 1fr;
+      line-height: initial !important;
+      text-align: left;
+      padding: 5px 20px 20px 0px !important;
+
+      t{
+        padding-right: 5px;
+      }
     }
 
-    em{
+    em, i{
       font-style: normal;
       padding-right: 15px;
       opacity: 0.75;
     }
+
+    &:hover{
+      opacity: 1 !important;
+
+    }
+  }
+
+  .no-text div{
+    border-radius: 50px !important;
   }
 
   .btn{
@@ -317,6 +336,10 @@ html, body {
     position: fixed;
     right: 20px;
     z-index: 999;
+
+    .feather-x-circle{
+      display: none;
+    }
 
     span{
       pointer-events: none;
@@ -525,6 +548,15 @@ html, body {
 
 }
 
+.player-count.open{
+  .feather-x-circle{
+    display: block;
+  }
+
+  .feather-message-circle{
+    display: none;
+  }
+}
 .has-dropdown.open{
   .dropdown{
     display: block;

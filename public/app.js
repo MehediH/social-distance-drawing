@@ -375,12 +375,12 @@ function getMousePosition(x, y){
 }
 
 clear.addEventListener("click", () => {
-  context.clearRect(0, 0, canvas.width, canvas.height);
   socket.emit("clearCanvas", current.user)
 })
 
-socket.on("clearCanvas", (user) => {
-  context.clearRect(0, 0, canvas.width, canvas.height);
+socket.on("clearCanvas", (data) => {
+  let {room, user} = data;
+  updateCanvasColor(room.bg)
 })
 
 lock.addEventListener("click", () => {
@@ -532,13 +532,13 @@ playerCount.addEventListener("click", (e) => {
 })
 
 // close user box
-document.addEventListener("click", (e) => {
-  if(!e.target.closest(".player-count")){
-    if(playerCount.classList.contains("open")){
-      playerCount.classList.remove("open")
-    }
-  }
-})
+// document.addEventListener("click", (e) => {
+//   if(!e.target.closest(".player-count")){
+//     if(playerCount.classList.contains("open")){
+//       playerCount.classList.remove("open")
+//     }
+//   }
+// })
 
 // add invite link
 let shareLinkBox = document.querySelector(".shareLink")
@@ -682,9 +682,11 @@ socket.on("skipRoundWait", () => {
 
 // game
 function startGame(game){
+  
   let timer = Math.abs(new Date()-new Date(game.timer)) / 1000;
-  startTimer(60-timer, document.querySelector(".timer span"), game.round)
-  document.querySelector(".timer em").innerText = `(round ${game.round})`
+  startTimer(5-timer, document.querySelector(".timer span t"), game.round)
+  document.querySelector(".timer span em").innerText = `(round ${game.round})`
+  document.querySelector(".timer i").innerText = `draw ${game.currentlyDrawing}`
 
   let currentlyDrawing = document.querySelector(".currently-drawing");
   currentlyDrawing.innerHTML = `<em>draw</em><span>${game.currentlyDrawing}</span>`
@@ -704,7 +706,7 @@ function nextRound(currentRound){
   
   // if its just one user, we dont vote and go next round
   if(parseInt(userCount) == 1){
-    if(currentRound >= 10){
+    if(currentRound >= 5){
       socket.emit("joinGame", true);
     } else{
       socket.emit("nextRound");
@@ -714,7 +716,7 @@ function nextRound(currentRound){
 
   document.querySelector(".modal__container").classList.add("leaderboard")
   
-  if(currentRound === 10){
+  if(currentRound === 5){
     firstRnHeader.innerText = "Winner winner chicken dinner";
     document.querySelector(".modal__footer").innerHTML = "<p>Starting new game in <span>00:00</span> seconds. You can keep drawing in the meantime :)</p>"
 
@@ -728,14 +730,15 @@ function nextRound(currentRound){
   }
 
   startTimer(10, document.querySelector(".modal__footer span"))
-  startTimer(10, document.querySelector(".timer span"))
-  document.querySelector(".timer em").innerText = `(waiting)`
+  startTimer(10, document.querySelector(".timer span t"))
+  document.querySelector(".timer span em").innerText = `(waiting)`
+  document.querySelector(".timer i").innerText = "draw anything"
 
   
   MicroModal.show('first-run', {
     disableScroll: true,
     disableFocus: true,
-    onClose: () => currentRound >= 10 ? socket.emit("joinGame", true) : null
+    onClose: () => currentRound >= 5 ? socket.emit("joinGame", true) : null
   })
 }
 

@@ -72,8 +72,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on("clearCanvas", (user) => {
-    resetRoomCanvas(rid)
-    socket.broadcast.to(rid).emit('clearCanvas', user)
+    let room = resetRoomCanvas(rid)
+    io.to(rid).emit('clearCanvas', {room, user})
   })
 
   socket.on("canvasColorChange", (color) => {
@@ -103,14 +103,17 @@ io.on('connection', (socket) => {
   })
 
   socket.on("nextRound", () => {
-    let {game} = getRoom(rid);
+    let room = getRoom(rid);
+    let game = room.game;
 
     let timer = Math.abs(new Date()-new Date(game.timer)) / 1000
 
-    if(timer < 60){
+    if(timer < 5){
       socket.emit("joinGame", game)
       return;
     }
+
+    socket.emit('clearCanvas', {room, user: {}})
 
     let newRound = nextRound(rid);
     socket.emit("joinGame", newRound)
