@@ -27,8 +27,9 @@
       <div class="btn fill" title="Fill canvas"><div><i data-feather="droplet"></i></div><span>Background</span></div>
       <div class="btn clear" title="Clear canvas"><div><i data-feather="trash-2"></i></div><span>Clear</span></div>
       <div class="btn lock" title="Lock room"><div><i data-feather="lock"></i><i data-feather="unlock"></i></div><span>Lock room</span></div>
+      <div class="btn timer" title="Timer for this round"><div><i data-feather="clock"></i></div><span>00:00</span><em>(round 1)</em></div>
     
-     
+  
       <div class="btn player-count has-dropdown" title="Players in the room">
         <a href="#"><div><i data-feather="message-circle"></i></div><span>0</span><em class="unread"></em></a>
         <div class="dropdown">
@@ -51,13 +52,35 @@
     
   <div class="user"></div>
   <div class="oops"><div class="emoji">🤬</div></div>
-
+  <h1 class="currently-drawing"></h1>
+  <div class="modal micromodal-slide" id="first-run" aria-hidden="false">
+    <div class="modal__overlay" tabindex="-1" data-micromodal-close="">
+      <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+        <header class="modal__header">
+          <h2 class="modal__title" id="modal-1-title">Welcome to Social Distance Drawing!</h2>
+          <button class="modal__close" aria-label="Close modal" data-micromodal-close=""></button>
+        </header>
+        <div class="modal__content" id="modal-1-content">
+          <p>Draw anything you want with your friends -- but there's a catch: social distancing 🚨</p>
+          <p>You can draw whatever you want, as long as you don't break socail distancing rules. When you draw very close to other players, the canvas will automatically clear and you'll have to start over 👀</p>
+          <p>Each round, we will give you something to draw. At the end of the round, everyone chooses a winner. After 10 rounds, you'll have your winner 👑</p>
+          <p>So get drawing, and have fun! And remmeber: we are social distancing over here!</p>
+        </div>
+        
+        <footer class="modal__footer">
+          <button class="modal__btn modal__btn-primary start-fr">Continue</button>
+        </footer>
+      </div>
+    </div>
+  </div>
+        
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.2/qs.min.js" integrity="sha256-TDxXjkAUay70ae/QJBEpGKkpVslXaHHayklIVglFRT4=" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
   
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.es5.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-
+  <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
   <script src="/app.js"></script>
 
 </body>

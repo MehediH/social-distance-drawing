@@ -20,6 +20,11 @@ let fill = document.querySelector(".fill");
 let toolbarButtons = document.querySelector(".buttons");
 let brushSizeControl = document.getElementById("brushSize");
 let playerList = document.querySelector(".player-count .dropdown ul");
+let firstRunOpen = true;
+let firstRnPhase = 1;
+let firstRnStartBtn = document.querySelector("#first-run .start-fr")
+let firstRnHeader = document.querySelector("#first-run .modal__title")
+let firstRnContent = document.querySelector("#first-run .modal__content")
 
 let brushSize = 10;
 
@@ -55,7 +60,13 @@ function joinRoom(userName){
       created: new Date(),
       locked: false,
       bg: "white",
-      ranks: new Map()
+      game: {
+        currentlyDrawing: "",
+        round: 0,
+        timer: 0,
+        ranks: {},
+        alreadyDrawn: []
+      }
     },
     userName
   })
@@ -108,6 +119,13 @@ socket.on("newUser", (user) => {
   }
 
   showMessage(`<li class="status"><p>${user.userName} joined the room</p></li>`, false)
+
+  if(firstRunOpen && firstRnPhase === 2){
+    let playersList = document.querySelector("#first-run .firstRunPlayersList")
+    playersList.innerHTML += `<li>${user.userName} joined the room</li>`
+
+    document.querySelector("#first-run .start-fr").innerText = "Let's play!"
+  }
 })
 
 socket.on("collided", (collision) => {
@@ -518,19 +536,24 @@ document.addEventListener("click", (e) => {
 
 // add invite link
 let shareLinkBox = document.querySelector(".shareLink")
-shareLinkBox.value = window.location.href.split(/[?#]/)[0] + "?room=" + room;
+inviteLink(shareLinkBox)
 
-shareLinkBox.addEventListener("focus", (e) => {
-  shareLinkBox.select();
-})
+function inviteLink(elem){
+  elem.value = window.location.href.split(/[?#]/)[0] + "?room=" + room;
 
-shareLinkBox.addEventListener("click", (e) => {
-  shareLinkBox.select();
-})
+  elem.addEventListener("focus", (e) => {
+    elem.select();
+  })
 
-shareLinkBox.addEventListener("mouseup", (e) => {
-  e.preventDefault();
-})
+  elem.addEventListener("click", (e) => {
+    elem.select();
+  })
+
+  elem.addEventListener("mouseup", (e) => {
+    e.preventDefault();
+  })
+
+}
 
 // chat input box
 let inputBox = document.querySelector(".chat-input input")
@@ -577,5 +600,146 @@ function showMessage(elem, indicate=true){
   }
 }
 
-let thingsToDraw = ["aircraft carrier", "airplane", "alarm clock", "ambulance", "angel", "animal migration", "ant", "anvil", "apple", "arm", "asparagus", "axe", "backpack", "banana", "bandage", "barn", "baseball", "baseball bat", "basket", "basketball", "bat", "bathtub", "beach", "bear", "beard", "bed", "bee", "belt", "bench", "bicycle", "binoculars", "bird", "birthday cake", "blackberry", "blueberry", "book", "boomerang", "bottlecap", "bowtie", "bracelet", "brain", "bread", "bridge", "broccoli", "broom", "bucket", "bulldozer", "bus", "bush", "butterfly", "cactus", "cake", "calculator", "calendar", "camel", "camera", "camouflage", "campfire", "candle", "cannon", "canoe", "car", "carrot", "castle", "cat", "ceiling fan", "cello", "cell phone", "chair", "chandelier", "church", "circle", "clarinet", "clock", "cloud", "coffee cup", "compass", "computer", "cookie", "cooler", "couch", "cow", "crab", "crayon", "crocodile", "crown", "cruise ship", "cup", "diamond", "dishwasher", "diving board", "dog", "dolphin", "donut", "door", "dragon", "dresser", "drill", "drums", "duck", "dumbbell", "ear", "elbow", "elephant", "envelope", "eraser", "eye", "eyeglasses", "face", "fan", "feather", "fence", "finger", "fire hydrant", "fireplace", "firetruck", "fish", "flamingo", "flashlight", "flip flops", "floor lamp", "flower", "flying saucer", "foot", "fork", "frog", "frying pan", "garden", "garden hose", "giraffe", "goatee", "golf club", "grapes", "grass", "guitar", "hamburger", "hammer", "hand", "harp", "hat", "headphones", "hedgehog", "helicopter", "helmet", "hexagon", "hockey puck", "hockey stick", "horse", "hospital", "hot air balloon", "hot dog", "hot tub", "hourglass", "house", "house plant", "hurricane", "ice cream", "jacket", "jail", "kangaroo", "key", "keyboard", "knee", "knife", "ladder", "lantern", "laptop", "leaf", "leg", "light bulb", "lighter", "lighthouse", "lightning", "line", "lion", "lipstick", "lobster", "lollipop", "mailbox", "map", "marker", "matches", "megaphone", "mermaid", "microphone", "microwave", "monkey", "moon", "mosquito", "motorbike", "mountain", "mouse", "moustache", "mouth", "mug", "mushroom", "nail", "necklace", "nose", "ocean", "octagon", "octopus", "onion", "oven", "owl", "paintbrush", "paint can", "palm tree", "panda", "pants", "paper clip", "parachute", "parrot", "passport", "peanut", "pear", "peas", "pencil", "penguin", "piano", "pickup truck", "picture frame", "pig", "pillow", "pineapple", "pizza", "pliers", "police car", "pond", "pool", "popsicle", "postcard", "potato", "power outlet", "purse", "rabbit", "raccoon", "radio", "rain", "rainbow", "rake", "remote control", "rhinoceros", "rifle", "river", "roller coaster", "rollerskates", "sailboat", "sandwich", "saw", "saxophone", "school bus", "scissors", "scorpion", "screwdriver", "sea turtle", "see saw", "shark", "sheep", "shoe", "shorts", "shovel", "sink", "skateboard", "skull", "skyscraper", "sleeping bag", "smiley face", "snail", "snake", "snorkel", "snowflake", "snowman", "soccer ball", "sock", "speedboat", "spider", "spoon", "spreadsheet", "square", "squiggle", "squirrel", "stairs", "star", "steak", "stereo", "stethoscope", "stitches", "stop sign", "stove", "strawberry", "streetlight", "string bean", "submarine", "suitcase", "sun", "swan", "sweater", "swing set", "sword", "syringe", "table", "teapot", "teddy-bear", "telephone", "television", "tennis racquet", "tent", "The Eiffel Tower", "The Great Wall of China", "The Mona Lisa", "tiger", "toaster", "toe", "toilet", "tooth", "toothbrush", "toothpaste", "tornado", "tractor", "traffic light", "train", "tree", "triangle", "trombone", "truck", "trumpet", "t-shirt", "umbrella", "underwear", "van", "vase", "violin", "washing machine", "watermelon", "waterslide", "whale", "wheel", "windmill", "wine bottle", "wine glass", "wristwatch", "yoga", "zebra", "zigzag"]
-// alert(thingsToDraw[getIndex(thingsToDraw.length)])
+// first run exp
+// show first run dialog
+MicroModal.show('first-run', {
+  disableScroll: true,
+  disableFocus: true, 
+  onClose: () => firstRunOpen = false
+});
+
+
+
+// user wnats to continue
+firstRnStartBtn.addEventListener("click", () => {
+  let userCount = document.querySelector(".player-count span").innerText;
+  
+  if(firstRnPhase === 1 && parseInt(userCount) === 1){
+    firstRnPhase += 1;
+
+    firstRnHeader.innerText = "Let's invite some friends!"
+
+    firstRnContent.innerHTML = `
+      <p>Looks like you are the only one here! The game is more fun with friends, so you can start off by inviting some with the following link:</p>
+      <input type="text" value="" class="shareLink"/>
+      <ul class="firstRunPlayersList"><li>Waiting for players to join...</li></ul>
+    `
+
+    document.querySelector("#first-run .start-fr").innerText = "...or draw on your own"
+
+    let shareLinkBox = document.querySelector("#first-run .shareLink")
+    inviteLink(shareLinkBox)
+  } else{
+    MicroModal.close()
+    socket.emit("joinGame")
+  }
+
+})
+
+function startTimer(duration, display, currentRound) {
+  var timer = duration, minutes, seconds;
+  let c = setInterval(function () {
+      minutes = parseInt(timer / 60, 10)
+      seconds = parseInt(timer % 60, 10);
+
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      display.textContent = minutes + ":" + seconds;
+
+      if (--timer < 0) { // timer done
+        if(currentRound){
+          nextRound(currentRound)
+        } else{
+          MicroModal.close()
+          socket.emit("nextRound");
+        }
+        
+        clearInterval(c)
+      }
+  }, 1000);
+}
+
+socket.on("joinGame", (game) => {
+  startGame(game)
+})
+
+// game
+function startGame(game){
+  let timer = Math.abs(new Date()-new Date(game.timer)) / 1000;
+  startTimer(60-timer, document.querySelector(".timer span"), game.round)
+  document.querySelector(".timer em").innerText = `(round ${game.round})`
+
+  let currentlyDrawing = document.querySelector(".currently-drawing");
+  currentlyDrawing.innerHTML = `<em>draw</em><span>${game.currentlyDrawing}</span>`
+  currentlyDrawing.classList.add("show")
+
+  setTimeout(() => {
+    currentlyDrawing.classList.remove("show")
+  }, 3000)
+
+  
+  
+}
+
+function nextRound(currentRound){
+
+  let userCount = document.querySelector(".player-count span").innerText;
+  
+  // if its just one user, we dont vote and go next round
+  if(parseInt(userCount) == 1){
+    socket.emit("nextRound");
+    return;
+  }
+
+  document.querySelector(".modal__container").classList.add("leaderboard")
+  
+  if(currentRound === 10){
+    firstRnHeader.innerText = "Winner winner chicken dinner";
+    showRanks(false)
+  } else{
+    document.querySelector(".modal__footer").innerHTML = "<p>Waiting for other players to vote (<span>00:00</span>). You can keep drawing in the meantime :)</p>"
+    
+    startTimer(15, document.querySelector(".modal__footer span"))
+    startTimer(15, document.querySelector(".timer span"))
+    document.querySelector(".timer em").innerText = `(waiting)`
+
+    firstRnHeader.innerText = "Choose a winner for round " + currentRound;
+    showRanks(true)
+  }
+
+  
+  MicroModal.show('first-run', {
+    disableScroll: true,
+    disableFocus: true
+  })
+}
+
+function showRanks(clickable){
+  socket.emit("getPlayerList");
+
+  socket.on("playersList", data => {
+    let {users, ranks} = data;
+
+    users.map(user => user.wins = ranks[user.id])
+  
+    users.sort((a, b) => b.wins - a.wins)
+
+    let content = "<ul class='vote-players'>"
+    content += `${users.map((user, i) => `<li class="player ${!clickable && i === 0 && user.wins > 0 ? "champ" : ""}" playerId="${user.id}">${user.userName}<span><em>👑</em>${user.wins}</span></li>`).join("")}`
+    content += "<ul>"
+
+    firstRnContent.innerHTML = content;
+
+    let playerList = document.querySelector(".vote-players")
+
+    playerList.addEventListener("click", (e) => {
+      if(e.target.classList.contains("player") && clickable){
+        e.target.classList.add("champ")
+        socket.emit("votePlayer", e.target.getAttribute("playerId"))
+        
+      }
+    })
+  })
+
+}

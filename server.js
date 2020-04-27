@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG} = require("./utils/rooms");
+const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG, startGame, nextRound, votePlayer} = require("./utils/rooms");
 
 const app = express();
 const server = http.createServer(app);
@@ -90,6 +90,40 @@ io.on('connection', (socket) => {
     io.to(rid).emit("rcvMessage", message)
   })
   
+  socket.on("joinGame", () => {
+    let room = getRoom(rid)
+    let game = room.game;
+
+    if(game.round === 0){
+      game = startGame(rid)
+      socket.emit("joinGame", game)
+    } else{
+      socket.emit("joinGame", game)
+    }
+  })
+
+  socket.on("nextRound", () => {
+    let {game} = getRoom(rid);
+
+    let timer = Math.abs(new Date()-new Date(game.timer)) / 1000
+
+    if(timer < 60){
+      socket.emit("joinGame", game)
+      return;
+    }
+
+    let newRound = nextRound(rid);
+    socket.emit("joinGame", newRound)
+  })
+
+  socket.on("getPlayerList", () => {
+    let {users, game} = getRoom(rid);
+    socket.emit("playersList", {users, ranks: game.ranks})
+  })
+
+  socket.on("votePlayer", (playerId) => {
+    votePlayer(rid, playerId)
+  })
 
   socket.on("disconnect", () => {
     const user = userLeave(uid, rid)
