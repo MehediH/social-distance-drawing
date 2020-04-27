@@ -125,12 +125,12 @@ io.on('connection', (socket) => {
   socket.on("votePlayer", vote => {
     votePlayer(rid, vote.playerId, vote.round);
     
-    let votesForThisRound = getGameVotesPerRound(rid, vote.round);
-    let {users} = getRoom(rid);
+    // let votesForThisRound = getGameVotesPerRound(rid, vote.round);
+    // let {users} = getRoom(rid);
 
-    if(votesForThisRound === users.length){
-      io.to(rid).emit("skipRoundWait")
-    }
+    // if(votesForThisRound === users.length){
+    //   io.to(rid).emit("skipRoundWait")
+    // }
   })
 
   socket.on("justDraw", () => {

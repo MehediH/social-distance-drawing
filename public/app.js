@@ -612,8 +612,7 @@ function firstRun(show){
   if(show){
     MicroModal.show('first-run', {
       disableScroll: true,
-      disableFocus: true, 
-      onClose: () => firstRunOpen = false
+      disableFocus: true
     });
     document.querySelector(".timer").style = "display: flex !important;"
   } else{
@@ -649,8 +648,8 @@ firstRnStartBtn.addEventListener("click", () => {
 })
 
 function startTimer(duration, display, currentRound) {
-  var timer = duration, minutes, seconds;
-  let c = setInterval(function () {
+  let timer = duration, minutes, seconds;
+  let appTimer = setInterval(function () {
       minutes = parseInt(timer / 60, 10)
       seconds = parseInt(timer % 60, 10);
 
@@ -667,7 +666,7 @@ function startTimer(duration, display, currentRound) {
           socket.emit("nextRound");
         }
         
-        clearInterval(c)
+        clearInterval(appTimer)
       }
   }, 1000);
 }
@@ -728,8 +727,8 @@ function nextRound(currentRound){
     showRanks(true, currentRound)
   }
 
-  startTimer(15, document.querySelector(".modal__footer span"))
-  startTimer(15, document.querySelector(".timer span"))
+  startTimer(10, document.querySelector(".modal__footer span"))
+  startTimer(10, document.querySelector(".timer span"))
   document.querySelector(".timer em").innerText = `(waiting)`
 
   
@@ -762,6 +761,8 @@ function showRanks(clickable, currentRound){
       if(e.target.classList.contains("player") && clickable){
         e.target.classList.add("champ")
 
+        MicroModal.close()
+
         socket.emit("votePlayer", {
           playerId: e.target.getAttribute("playerId"),
           round: currentRound
@@ -773,9 +774,13 @@ function showRanks(clickable, currentRound){
 
 }
 
+function justDraw(){
+  document.querySelector(".timer").remove();
+  socket.emit("justDraw");
+}
+
 // just draw, disable game
 document.querySelector(".just-draw").addEventListener("click", () => {
   MicroModal.close()
-  document.querySelector(".timer").remove();
-  socket.emit("justDraw")
+  justDraw()
 })
