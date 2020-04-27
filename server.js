@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG, startGame, nextRound, votePlayer} = require("./utils/rooms");
+const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG, startGame, nextRound, votePlayer, getGameVotesPerRound, disableGame} = require("./utils/rooms");
 
 const app = express();
 const server = http.createServer(app);
@@ -90,11 +90,11 @@ io.on('connection', (socket) => {
     io.to(rid).emit("rcvMessage", message)
   })
   
-  socket.on("joinGame", () => {
+  socket.on("joinGame", (restart=false) => {
     let room = getRoom(rid)
     let game = room.game;
 
-    if(game.round === 0){
+    if(game.round === 0 || restart){
       game = startGame(rid)
       socket.emit("joinGame", game)
     } else{
@@ -107,7 +107,7 @@ io.on('connection', (socket) => {
 
     let timer = Math.abs(new Date()-new Date(game.timer)) / 1000
 
-    if(timer < 60){
+    if(timer < 3){
       socket.emit("joinGame", game)
       return;
     }
@@ -121,8 +121,16 @@ io.on('connection', (socket) => {
     socket.emit("playersList", {users, ranks: game.ranks})
   })
 
-  socket.on("votePlayer", (playerId) => {
-    votePlayer(rid, playerId)
+
+  socket.on("votePlayer", vote => {
+    votePlayer(rid, vote.playerId, vote.round);
+    
+    let votesForThisRound = getGameVotesPerRound(rid, vote.round);
+    let {users} = getRoom(rid);
+
+    if(votesForThisRound === users.length){
+      io.to(rid).emit("skipRoundWait")
+    }
   })
 
   socket.on("disconnect", () => {
@@ -136,6 +144,10 @@ io.on('connection', (socket) => {
 
     // send players and room info
     io.to(rid).emit("roomUsers", getRoomUsers(rid))
+  })
+
+  socket.on("justDraw", () => {
+    disableGame(rid)
   })
 
   function checkCollisions(currentUser, updatedUserPositions){

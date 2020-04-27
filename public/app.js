@@ -61,10 +61,12 @@ function joinRoom(userName){
       locked: false,
       bg: "white",
       game: {
+        justDraw: false,
         currentlyDrawing: "",
         round: 0,
         timer: 0,
         ranks: {},
+        rounds: {},
         alreadyDrawn: []
       }
     },
@@ -96,13 +98,17 @@ socket.on("newId", (data) => {
     // console.log(d)
     drawLine(d.x0*w, d.y0*h, d.x1*w, d.y1*h, d.color, false, null, d.strokeWidth)
   }
+
+  firstRun(!room.game.justDraw)
 })
 
 
 socket.on('roomUsers', (users) => {
+  if(document.querySelector(".just-draw") && users.length > 1){
+    document.querySelector(".just-draw").remove()
+  }
+
   document.querySelector(".player-count span").innerText = users.length;
-  // TODO: add visual for showing connected users
-  // playerList.innerHTML = `${users.map(user => `<li><span style='background-color: ${user.avatar}'></span><p>${user.userName}</p></li>`).join("")}`
 });
 
 // add a new player to DOM
@@ -602,12 +608,18 @@ function showMessage(elem, indicate=true){
 
 // first run exp
 // show first run dialog
-MicroModal.show('first-run', {
-  disableScroll: true,
-  disableFocus: true, 
-  onClose: () => firstRunOpen = false
-});
-
+function firstRun(show){
+  if(show){
+    MicroModal.show('first-run', {
+      disableScroll: true,
+      disableFocus: true, 
+      onClose: () => firstRunOpen = false
+    });
+    document.querySelector(".timer").style = "display: flex !important;"
+  } else{
+    socket.emit("justDraw")
+  }
+}
 
 
 // user wnats to continue
@@ -664,10 +676,15 @@ socket.on("joinGame", (game) => {
   startGame(game)
 })
 
+socket.on("skipRoundWait", () => {
+  MicroModal.close();
+  socket.emit("nextRound");
+})
+
 // game
 function startGame(game){
   let timer = Math.abs(new Date()-new Date(game.timer)) / 1000;
-  startTimer(60-timer, document.querySelector(".timer span"), game.round)
+  startTimer(3-timer, document.querySelector(".timer span"), game.round)
   document.querySelector(".timer em").innerText = `(round ${game.round})`
 
   let currentlyDrawing = document.querySelector(".currently-drawing");
@@ -688,7 +705,11 @@ function nextRound(currentRound){
   
   // if its just one user, we dont vote and go next round
   if(parseInt(userCount) == 1){
-    socket.emit("nextRound");
+    if(currentRound >= 10){
+      socket.emit("joinGame", true);
+    } else{
+      socket.emit("nextRound");
+    }
     return;
   }
 
@@ -696,26 +717,30 @@ function nextRound(currentRound){
   
   if(currentRound === 10){
     firstRnHeader.innerText = "Winner winner chicken dinner";
+    document.querySelector(".modal__footer").innerHTML = "<p>Starting new game in <span>00:00</span> seconds. You can keep drawing in the meantime :)</p>"
+
     showRanks(false)
   } else{
-    document.querySelector(".modal__footer").innerHTML = "<p>Waiting for other players to vote (<span>00:00</span>). You can keep drawing in the meantime :)</p>"
-    
-    startTimer(15, document.querySelector(".modal__footer span"))
-    startTimer(15, document.querySelector(".timer span"))
-    document.querySelector(".timer em").innerText = `(waiting)`
+    document.querySelector(".modal__footer").innerHTML = "<p>Waiting for other players to vote in the remaining <span>00:00</span> seconds. You can keep drawing in the meantime :)</p>"
+  
 
     firstRnHeader.innerText = "Choose a winner for round " + currentRound;
-    showRanks(true)
+    showRanks(true, currentRound)
   }
+
+  startTimer(15, document.querySelector(".modal__footer span"))
+  startTimer(15, document.querySelector(".timer span"))
+  document.querySelector(".timer em").innerText = `(waiting)`
 
   
   MicroModal.show('first-run', {
     disableScroll: true,
-    disableFocus: true
+    disableFocus: true,
+    onClose: () => currentRound >= 10 ? socket.emit("joinGame", true) : null
   })
 }
 
-function showRanks(clickable){
+function showRanks(clickable, currentRound){
   socket.emit("getPlayerList");
 
   socket.on("playersList", data => {
@@ -736,10 +761,21 @@ function showRanks(clickable){
     playerList.addEventListener("click", (e) => {
       if(e.target.classList.contains("player") && clickable){
         e.target.classList.add("champ")
-        socket.emit("votePlayer", e.target.getAttribute("playerId"))
-        
+
+        socket.emit("votePlayer", {
+          playerId: e.target.getAttribute("playerId"),
+          round: currentRound
+        })
+
       }
     })
   })
 
 }
+
+// just draw, disable game
+document.querySelector(".just-draw").addEventListener("click", () => {
+  MicroModal.close()
+  document.querySelector(".timer").remove();
+  socket.emit("justDraw")
+})

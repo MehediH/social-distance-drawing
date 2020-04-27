@@ -228,6 +228,8 @@ html, body {
   }
 
   .timer{
+    display: none !important;
+    
     span{
       padding-right: 5px !important;
     }

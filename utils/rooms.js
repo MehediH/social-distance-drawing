@@ -177,14 +177,35 @@ function nextRound(rid){
   return room.game;
 }
 
-function votePlayer(rid, playerId){
+function votePlayer(rid, playerId, round){
   let room = rooms.find(room => room.id === rid);
 
   if(!room){return;}
 
   let game = room.game;
   game.ranks[playerId] += 1;
-  console.log(game)
+
+  if(!game.rounds[round]){
+    game.rounds[round] = 1;
+  } else{
+    game.rounds[round] += 1;
+  }
+}
+
+function getGameVotesPerRound(rid, round){
+  let room = rooms.find(room => room.id === rid);
+
+  if(!room){return;}
+
+  return room.game.rounds[round]
+}
+
+function disableGame(rid){
+  let room = rooms.find(room => room.id === rid);
+
+  if(!room){return;}
+
+  room.game.justDraw = true;
 }
 
 module.exports = {
@@ -201,5 +222,7 @@ module.exports = {
   updateCanvasBG,
   startGame,
   nextRound,
-  votePlayer
+  votePlayer,
+  getGameVotesPerRound,
+  disableGame
 };
