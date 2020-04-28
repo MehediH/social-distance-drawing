@@ -87,6 +87,8 @@ socket.on("newId", (data) => {
   user.x = 0;
   user.y = 0;
 
+  document.querySelector(".updateName").value = user.userName;
+
   startListening(user);
 
   let w = canvas.width;
@@ -539,6 +541,13 @@ document.addEventListener("keydown", (e) => {
     playerCount.classList.remove("open")
     settingsIcon.classList.remove("display")
   }
+
+  // shortcut C for toggling chat
+  if(e.keyCode === 67 && e.target.localName !== "input"){
+    playerCount.classList.toggle("open")
+    settingsIcon.classList.toggle("display")
+  }
+
 })
 
 // settigs open
@@ -622,10 +631,13 @@ function showMessage(elem, indicate=true){
 
 // first run exp
 // show first run dialog
-function firstRun(show){
-  if(show){
+function firstRun(show){ 
+  if(show){ 
     if(!name){
-      firstRnContent.innerHTML += "<label>Set your name (we automagically picked one for you)</label><input type='text' placeholder='Enter your name' value='" + current.user.userName + "' class='updateName'/>"
+      if(!firstRnContent.querySelector(".updateName") && firstRnPhase === 1){
+        firstRnContent.innerHTML += "<label>Set your name (we automagically picked one for you)</label><input type='text' placeholder='Enter your name' value='" + current.user.userName + "' class='updateName'/>"
+      }
+
       updateNameHandler(document.querySelector(".modal__content .updateName"), undefined, () => {
         document.querySelector(".start-fr").focus();
       })
@@ -652,6 +664,8 @@ function updateNameHandler(elem, triggerElem, onEnter){
       let newName = elem.value.replace(/\s/g, '');
       if(newName !== "" && newName !== current.user.userName){
         socket.emit("updateName", newName)
+        playerCount.classList.toggle("hide-settings")
+      } else{
         playerCount.classList.toggle("hide-settings")
       }
       

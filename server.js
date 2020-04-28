@@ -100,8 +100,8 @@ io.on('connection', (socket) => {
     } else{
       socket.emit("joinGame", game)
     }
-  })
-
+  })  
+ 
   socket.on("nextRound", () => {
     let room = getRoom(rid);
     let game = room.game;
