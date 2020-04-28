@@ -648,7 +648,10 @@ function firstRun(show){
       disableFocus: true,
       onClose: () => firstRnPhase === 1 ? justDraw() : socket.emit("joinGame")
     });
-    document.querySelector(".timer").style = "display: flex !important;"
+    let timer = document.querySelector(".timer");
+    if(timer){
+      timer.style = "display: flex !important;"
+    }
   } else{
     socket.emit("justDraw")
   }
@@ -858,7 +861,10 @@ function showRanks(clickable, currentRound){
 }
 
 function justDraw(){
-  document.querySelector(".timer").remove();
+  let timer = document.querySelector(".timer");
+  if(timer){
+    timer.remove();
+  }
   socket.emit("justDraw");
 }
 
@@ -866,4 +872,13 @@ function justDraw(){
 document.querySelector(".just-draw").addEventListener("click", () => {
   MicroModal.close()
   justDraw()
+
+  let nameInput = document.querySelector(".modal__content .updateName");
+
+  console.log(nameInput)
+  // if user enters name on first run phase
+  if(firstRnPhase === 1 && nameInput != "" && nameInput.value.replace(/\s/g, '') !== current.user.userName){
+    socket.emit("updateName", nameInput.value.replace(/\s/g, ''))
+  }
+
 })
