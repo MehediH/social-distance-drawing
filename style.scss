@@ -326,6 +326,41 @@ html, body {
     }
   }
 
+  .settings.display{
+    display: block;
+  }
+
+  .settings{
+    right: 120px;
+    position: fixed;
+    display: none;
+  }
+
+  .hide-settings section.settings-container{
+    display: none;
+  }
+
+  .hide-settings{
+    .chat-input{
+      display: flex !important;
+    }
+  }
+
+  .settings-container{
+    position: absolute;
+    top: 0;
+    height: 100%;
+    left: 0;
+    background-color: white;
+    padding: 25px;
+    z-index: 9;
+    text-align: left;
+
+    button{
+      margin-top: 25px;
+    }
+  }
+
   .player-count.show-unread{
     .unread{
       opacity: 1;
@@ -373,7 +408,7 @@ html, body {
       }
 
       .chat-input{
-        display: flex;
+        display: none;
         align-items: center;
         justify-content: center;
         position: absolute;
@@ -438,6 +473,10 @@ html, body {
             background-color: #e9eaed;
             color: #333;
             border-radius: 25px 25px 0px 25px;
+
+            span{
+              color: #333;
+            }
           }
         }
 
@@ -464,8 +503,9 @@ html, body {
       
           em{
             display: block;
-            font-size: 14px;
+            font-size: 13px;
             font-style: normal;
+            opacity: 0.75;
           }
       
           span{

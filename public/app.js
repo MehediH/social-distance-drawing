@@ -25,7 +25,7 @@ let firstRnPhase = 1;
 let firstRnStartBtn = document.querySelector("#first-run .start-fr")
 let firstRnHeader = document.querySelector("#first-run .modal__title")
 let firstRnContent = document.querySelector("#first-run .modal__content")
-
+let settingsIcon = document.querySelector(".settings")
 let brushSize = 10;
 
 
@@ -530,15 +530,21 @@ playerCount.addEventListener("click", (e) => {
   if(!e.target.closest(".dropdown")){
     playerCount.classList.toggle("open")
     playerCount.classList.remove("show-unread")
+    settingsIcon.classList.toggle("display")
   }
 })
 
 document.addEventListener("keydown", (e) => {
   if(e.keyCode === 27 && playerCount.classList.contains("open")){
     playerCount.classList.remove("open")
+    settingsIcon.classList.remove("display")
   }
 })
 
+// settigs open
+settingsIcon.addEventListener("click", (e) => {
+  playerCount.classList.toggle("hide-settings")
+})
 // close user box
 // document.addEventListener("click", (e) => {
 //   if(!e.target.closest(".player-count")){
@@ -619,7 +625,7 @@ function showMessage(elem, indicate=true){
 function firstRun(show){
   if(show){
     if(!name){
-      firstRnContent.innerHTML += "<label>Set your name (we automagically picked one for you)</label><input tpye='text' placeholder='Enter your name' value='" + current.user.userName + "' class='updateName'/>"
+      firstRnContent.innerHTML += "<label>Set your name (we automagically picked one for you)</label><input type='text' placeholder='Enter your name' value='" + current.user.userName + "' class='updateName'/>"
       updateNameHandler(document.querySelector(".modal__content .updateName"), undefined, () => {
         document.querySelector(".start-fr").focus();
       })
@@ -636,10 +642,19 @@ function firstRun(show){
   }
 }
 
+updateNameHandler(document.querySelector(".updateName"), document.querySelector(".setNewName"), () => {
+  document.querySelector(".setNewName").click()
+})
+
 function updateNameHandler(elem, triggerElem, onEnter){
   if(triggerElem){
     triggerElem.addEventListener("click", () => {
-      socket.emit("updateName", elem.value.replace(/\s/g, ''))
+      let newName = elem.value.replace(/\s/g, '');
+      if(newName !== "" && newName !== current.user.userName){
+        socket.emit("updateName", newName)
+        playerCount.classList.toggle("hide-settings")
+      }
+      
     })
   }
 
@@ -735,7 +750,7 @@ socket.on("skipRoundWait", () => {
 function startGame(game){
   
   let timer = Math.abs(new Date()-new Date(game.timer)) / 1000;
-  startTimer(5-timer, document.querySelector(".timer span t"), game.round)
+  startTimer(60-timer, document.querySelector(".timer span t"), game.round)
   document.querySelector(".timer span em").innerText = `(round ${game.round})`
   document.querySelector(".timer i").innerText = `draw ${game.currentlyDrawing}`
 

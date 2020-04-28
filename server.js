@@ -108,7 +108,7 @@ io.on('connection', (socket) => {
 
     let timer = Math.abs(new Date()-new Date(game.timer)) / 1000
 
-    if(timer < 5){
+    if(timer < 60){
       socket.emit("joinGame", game)
       return;
     }
