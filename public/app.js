@@ -310,7 +310,7 @@ function onMouseMove(e){
   current.user.pX = e.clientX
   current.user.pY = e.clientY
   
-  drawLine(current.x, current.y, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, current.color, true, current.user, brushSize);
+  drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true, current.user, brushSize);
   current.x = e.clientX||e.touches[0].clientX;
   current.y = e.clientY||e.touches[0].clientY;
 }
@@ -815,10 +815,16 @@ function nextRound(currentRound){
   }
 
   document.querySelector(".modal__container").classList.add("leaderboard")
-  
+  document.querySelector(".modal__overlay").classList.remove("normal")
+  document.querySelector(".modal__overlay").classList.add("side")
+
   if(currentRound === 5){
     firstRnHeader.innerText = "Winner winner chicken dinner";
-    document.querySelector(".modal__footer").innerHTML = "You can go back to just drawing now :)";
+    document.querySelector(".modal__footer").innerHTML = "You can go back to just drawing now :)<button class='btn-d play-gamed'>Start new game</button>&nbsp;<button class='btn-d' data-micromodal-close=''>Close</button>";
+
+    document.querySelector(".play-gamed").addEventListener("click", () => {
+      document.querySelector(".play-game").click();
+    })
 
     showRanks(false)
     justDraw(true)
@@ -830,8 +836,8 @@ function nextRound(currentRound){
     showRanks(true, currentRound)
   }
 
-  startTimer(5, document.querySelector(".modal__footer span"))
-  startTimer(5, document.querySelector(".timer span t"))
+  startTimer(10, document.querySelector(".modal__footer span"))
+  startTimer(10, document.querySelector(".timer span t"))
   document.querySelector(".timer span em").innerText = `(waiting)`
   document.querySelector(".timer i").innerText = "draw anything"
 
