@@ -108,16 +108,18 @@ io.on('connection', (socket) => {
 
     let timer = Math.abs(Date.now()-game.timer) / 1000
 
-    if(timer < 60){
+    if(timer < 5){
       socket.emit("joinGame", game)
       return;
     }
 
-    socket.emit('clearCanvas', {room, user: {}})
+    io.to(rid).emit('clearCanvas', {room, user: {}})
 
     let newRound = nextRound(rid);
     socket.emit("joinGame", newRound)
   })
+
+  socket.on("reloadGame", () => io.to(rid).emit("reloadGame"))
 
   socket.on("getPlayerList", () => {
     let {users, game} = getRoom(rid);

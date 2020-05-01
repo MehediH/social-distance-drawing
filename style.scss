@@ -366,22 +366,7 @@ html, body {
       box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.15);  
     }
 
-    button{
-      border: 0px;
-      background-color: #e9eaed;
-      border-radius: 50px;
-      font-size: 15px;
-      padding: 10px 20px;
-      margin-top: 15px;
-      box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.15);  
-      outline: 0;
-      cursor: pointer;
-      transition: 0.3s all ease-in-out;
     
-      &:hover, &:focus{
-        box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.35);
-      }
-    }
   }
 
   .player-count.show-unread{
@@ -854,7 +839,7 @@ html, body {
     margin-top: 0px !important;
   }
 
-  input{
+  input[type='text']{
     width: 100%;
     margin-top: 10px;
     border: 0px;
@@ -865,8 +850,8 @@ html, body {
     font-size: 15px;
     box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.15);
   }
-  
-  .vote-players{
+
+  .leaderboard-players{
     list-style-type: none;
     padding: 0px;
     display: grid;
@@ -885,16 +870,36 @@ html, body {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      cursor: pointer;
       transition: 0.3s all ease-in-out;
-
-      &:hover{
-        box-shadow: 0px 3px 12px rgba(0, 0, 0, 0.15);
-      }
 
       em{
         padding-right: 5px;
         font-size: 20px;
+        font-style: normal;
+      }
+    }
+  }
+  
+  .vote-players{
+    list-style-type: none;
+    padding: 0px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 20px;
+
+    li.champ{
+      color: white;
+      background-color: #0c904d;
+    }
+
+    li{
+      label, span{
+        padding-left: 10px;
+      }
+
+      em{
+        padding-right: 5px;
+        font-size: 19px;
         font-style: normal;
       }
     }
@@ -1036,5 +1041,22 @@ html, body {
     font-size: 30px;
     font-style: normal;
     color: #b650e8;
+  }
+}
+
+button.btn-d{
+  border: 0px;
+  background-color: #e9eaed;
+  border-radius: 50px;
+  font-size: 15px;
+  padding: 10px 20px;
+  margin-top: 15px;
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.15);  
+  outline: 0;
+  cursor: pointer;
+  transition: 0.3s all ease-in-out;
+
+  &:hover, &:focus{
+    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.35);
   }
 }

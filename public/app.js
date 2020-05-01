@@ -695,6 +695,7 @@ socket.on("updatedUserName", updateDetails => {
 
   if(current.user.id === user.id){
     current.user = user;
+    document.querySelector(".updateName").value = user.userName;
   }
   
   showMessage(`<li class="status"><p>${oldName} changed their name to ${user.userName}</p></li>`, false)
@@ -739,11 +740,12 @@ firstRnStartBtn.addEventListener("click", () => {
 
 })
 
-let appTimer;
+let gameStop;
 
 function startTimer(duration, display, currentRound) {
+  if(gameStop){return;}
   let timer = duration, minutes, seconds;
-  appTimer = setInterval(function () {
+  let appTimer = setInterval(function () {
       minutes = parseInt(timer / 60, 10)
       seconds = parseInt(timer % 60, 10);
 
@@ -762,6 +764,10 @@ function startTimer(duration, display, currentRound) {
         
         clearInterval(appTimer)
       }
+
+      if(gameStop){
+        clearInterval(appTimer)
+      }
   }, 1000);
 }
 
@@ -778,7 +784,7 @@ socket.on("skipRoundWait", () => {
 function startGame(game){
   
   let timer = Math.abs(Date.now()-game.timer) / 1000;
-  startTimer(60-timer, document.querySelector(".timer span t"), game.round)
+  startTimer(5-timer, document.querySelector(".timer span t"), game.round)
   document.querySelector(".timer span em").innerText = `(round ${game.round})`
   document.querySelector(".timer i").innerText = `draw ${game.currentlyDrawing}`
 
@@ -812,70 +818,86 @@ function nextRound(currentRound){
   
   if(currentRound === 5){
     firstRnHeader.innerText = "Winner winner chicken dinner";
-    document.querySelector(".modal__footer").innerHTML = "<p>Starting new game in <span>00:00</span> seconds. You can keep drawing in the meantime :)</p>"
+    document.querySelector(".modal__footer").innerHTML = "You can go back to just drawing now :)";
 
     showRanks(false)
+    justDraw(true)
   } else{
     document.querySelector(".modal__footer").innerHTML = "<p>Waiting for other players to vote in the remaining <span>00:00</span> seconds. You can keep drawing in the meantime :)</p>"
-  
+
 
     firstRnHeader.innerText = "Choose a winner for round " + currentRound;
     showRanks(true, currentRound)
   }
 
-  startTimer(10, document.querySelector(".modal__footer span"))
-  startTimer(10, document.querySelector(".timer span t"))
+  startTimer(5, document.querySelector(".modal__footer span"))
+  startTimer(5, document.querySelector(".timer span t"))
   document.querySelector(".timer span em").innerText = `(waiting)`
   document.querySelector(".timer i").innerText = "draw anything"
 
   
   MicroModal.show('first-run', {
     disableScroll: true,
-    disableFocus: true,
-    onClose: () => currentRound >= 5 ? socket.emit("joinGame", true) : null
+    disableFocus: true
   })
 }
 
 function showRanks(clickable, currentRound){
-  socket.emit("getPlayerList");
+  firstRnPhase = 3;
+  socket.emit("getPlayerList"); 
 
   socket.on("playersList", data => {
     let {users, ranks} = data;
 
-    users.map(user => user.wins = ranks[user.id])
+    users.map(user => user.wins = ranks[user.id]) 
   
-    users.sort((a, b) => b.wins - a.wins)
+    users.sort((a, b) => b.wins - a.wins) 
 
-    let content = "<ul class='vote-players'>"
-    content += `${users.map((user, i) => `<li class="player ${!clickable && i === 0 && user.wins > 0 ? "champ" : ""}" playerId="${user.id}"><input type="radio" id="${user.id}" name="vote" value="${user.id}"><label for="${user.id}">${user.userName}<span><em>👑</em>${user.wins}</span></label></li>`).join("")}`
-    content += "<ul>"
+    let content = "";
+
+    if(clickable){
+      content = "<ul class='vote-players'>"
+      content += `${users.map((user, i) => `<li class="player" playerId="${user.id}"><input type="radio" id="${i}" name="vote" value="${user.id}"><label for="${i}">${user.userName}<span><em>👑</em>${user.wins}</span></label></li>`).join("")}`
+      content += "</ul>"
+
+      content += "<button class='submit-vote btn-d'>Submit vote</button>" 
+
+      
+    } else{
+      content = "<ul class='leaderboard-players'>"
+      content += `${users.map((user, i) => `<li class="player ${i === 0 & user.wins > 0 ? "champ" : ""}" playerId="${user.id}">${user.userName}<span><em>👑</em>${user.wins}</span></li>`).join("")}`
+      content += "</ul>"
+
+    }
 
     firstRnContent.innerHTML = content;
 
-    let playerList = document.querySelector(".vote-players")
+    let playerVote = document.querySelector(".submit-vote")
 
-    // playerList.addEventListener("click", (e) => {
-    //   if(e.target.classList.contains("player") && clickable){
-    //     e.target.classList.add("champ")
+    if(playerVote){
+      playerVote.addEventListener("click", (e) => {
+        MicroModal.close()
 
-    //     MicroModal.close()
+        socket.emit("votePlayer", {
+          playerId: document.querySelector("input[name='vote']:checked").value,
+          round: currentRound
+        })
 
-    //     socket.emit("votePlayer", {
-    //       playerId: e.target.getAttribute("playerId"),
-    //       round: currentRound
-    //     })
-
-    //   }
-    // })
+      })
+    }
   })
 
 }
 
-function justDraw(){
+function justDraw(newGame){
   let timer = document.querySelector(".timer");
   timer.classList.add("hide")
-  clearInterval(appTimer)
+  gameStop = true;
   socket.emit("justDraw", true);
+
+  if(newGame){
+    document.querySelector(".play-game").classList.remove("hide")
+  }
 }
 
 
@@ -889,6 +911,7 @@ justDrawBtn.addEventListener("click", () => {
 
 document.querySelector(".play-game").addEventListener("click", () => {
   socket.emit("justDraw", false);
-  location.reload();
-
+  socket.emit("reloadGame")
 })
+
+socket.on("reloadGame", () => location.reload())
