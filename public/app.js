@@ -756,7 +756,11 @@ function startTimer(duration, display, currentRound) {
 
       if (--timer < 0) { // timer done
         if(currentRound){
-          nextRound(currentRound)
+          if(currentRound === 6){
+            // TODO: FIX ROUND 5 VOTING
+          } else{
+            nextRound(currentRound)
+          }
         } else{
           MicroModal.close()
           socket.emit("nextRound");
@@ -818,26 +822,15 @@ function nextRound(currentRound){
   document.querySelector(".modal__overlay").classList.remove("normal")
   document.querySelector(".modal__overlay").classList.add("side")
 
-  if(currentRound === 5){
-    firstRnHeader.innerText = "Winner winner chicken dinner";
-    document.querySelector(".modal__footer").innerHTML = "You can go back to just drawing now :)<button class='btn-d play-gamed'>Start new game</button>&nbsp;<button class='btn-d' data-micromodal-close=''>Close</button>";
-
-    document.querySelector(".play-gamed").addEventListener("click", () => {
-      document.querySelector(".play-game").click();
-    })
-
-    showRanks(false)
-    justDraw(true)
-  } else{
-    document.querySelector(".modal__footer").innerHTML = "<p>Waiting for other players to vote in the remaining <span>00:00</span> seconds. You can keep drawing in the meantime :)</p>"
+  
+    document.querySelector(".modal__footer").innerHTML = "<p>Waiting for other players to vote. You can keep drawing in the meantime :)</p>"
 
 
     firstRnHeader.innerText = "Choose a winner for round " + currentRound;
     showRanks(true, currentRound)
-  }
 
-  startTimer(10, document.querySelector(".modal__footer span"))
-  startTimer(10, document.querySelector(".timer span t"))
+
+  startTimer(5, document.querySelector(".timer span t"))
   document.querySelector(".timer span em").innerText = `(waiting)`
   document.querySelector(".timer i").innerText = "draw anything"
 
@@ -921,3 +914,22 @@ document.querySelector(".play-game").addEventListener("click", () => {
 })
 
 socket.on("reloadGame", () => location.reload())
+
+socket.on("gameFinish", () => {
+  firstRnHeader.innerText = "Winner winner chicken dinner";
+  document.querySelector(".modal__footer").innerHTML = "You can go back to just drawing now :)<button class='btn-d play-gamed'>Start new game</button>&nbsp;<button class='btn-d' data-micromodal-close=''>Close</button>";
+
+  document.querySelector(".play-gamed").addEventListener("click", () => {
+    document.querySelector(".play-game").click();
+  })
+
+  showRanks(false)
+  
+  MicroModal.show('first-run', {
+    disableScroll: true,
+    disableFocus: true
+  });
+  
+  justDraw(true);
+ 
+})

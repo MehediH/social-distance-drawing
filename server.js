@@ -108,11 +108,17 @@ io.on('connection', (socket) => {
 
     let timer = Math.abs(Date.now()-game.timer) / 1000
 
+    
     if(timer < 5){
       socket.emit("joinGame", game)
       return;
     }
 
+    if(game.round === 5){
+      io.to(rid).emit("gameFinish")
+      return;
+    }
+    
     io.to(rid).emit('clearCanvas', {room, user: {}})
 
     let newRound = nextRound(rid);
