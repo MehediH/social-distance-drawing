@@ -142,6 +142,21 @@ html, body {
       background-color: #FF5678;
     }
   }
+
+  a.intro{
+    float: right;
+    margin-top: 20px;
+    font-size: 22px;
+    text-decoration: none;
+    color: #000;
+    opacity: 0.85;
+    transition: 0.3s color ease-in-out;
+
+    &:hover{
+      opacity: 1;
+      color: #FF5678;
+    }
+  }
 }
  
 .user{
@@ -1060,7 +1075,7 @@ html, body {
   }
 }
 
-button.btn-d{
+button.btn-d, a.btn-d{
   border: 0px;
   background-color: #e9eaed;
   border-radius: 50px;
@@ -1095,6 +1110,102 @@ button.btn-d{
     }
     em{
       display: block !important;
+    }
+  }
+}
+
+.open-splash{
+  overflow-y: auto !important;
+
+  a{
+    font-size: 20px;
+    margin: 0px;
+    padding: 0px;
+    color: #333;
+    text-decoration: none;
+    transition: 0.3s all ease-in-out;
+
+    &:hover{
+      color: #ff5677;
+    }
+  }
+
+  h2{
+    font-size: 35px;
+    padding: 0px;
+    margin-top: 10px;
+  }
+}
+
+.open{
+  position: relative !important;
+  width: 500px;
+  top: 0;
+  transform: translateX(-50%);
+  padding: 50px 0;
+}
+
+.open-rooms{
+  list-style-type: none;
+  padding: 0px;
+
+  li{
+    margin-bottom: 10px;
+  }
+
+  .disable{
+    border-color: #333;
+    color: #333;
+    cursor: not-allowed;
+
+    &:hover{
+      color: #333;
+      background-color: transparent;
+
+      span{
+        color: #333;
+      }
+    }
+  }
+
+  a{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #ff5677;
+    border: 3px solid #ff5677;
+    background-color: transparent;
+    font-weight: 800;
+    transition: 0.2s all ease-in-out;
+
+    &:hover{
+      background-color: #ff5677;
+      color: #fff;
+
+      span{
+        color: #fff;
+      }
+    }
+  }
+
+  span{
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    p{
+      margin: 0px;
+      padding: 0px;
+      font-weight: normal;
+    }
+
+    svg{
+      width: 22px;
+      padding-right: 5px;
     }
   }
 }

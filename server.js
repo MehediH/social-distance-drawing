@@ -53,6 +53,8 @@ io.on('connection', (socket) => {
     // send players and room info
     io.to(room.id).emit("roomUsers", getRoomUsers(room.id))
 
+    notifyOpenRooms()
+
   })
 
 
@@ -83,6 +85,7 @@ io.on('connection', (socket) => {
 
   socket.on("lockRoom", (user) => {
     let status = lockRoom(rid)
+    notifyOpenRooms();
     io.to(rid).emit("lockRoom", {user, status})
   })
 
@@ -153,6 +156,18 @@ io.on('connection', (socket) => {
     io.to(rid).emit("updatedUserName", data)
   })
 
+  socket.on("loadOpenRooms", () => {
+    notifyOpenRooms()
+  })
+
+  function notifyOpenRooms(){
+    let rooms = getRooms();
+
+    rooms = rooms.filter(room => room.locked === false)
+
+    io.emit("openRooms", rooms)
+  }
+
   socket.on("disconnect", () => {
     const user = userLeave(uid, rid)
 
@@ -163,7 +178,8 @@ io.on('connection', (socket) => {
     socket.broadcast.emit("playerDisconnect", user)
 
     // send players and room info
-    io.to(rid).emit("roomUsers", getRoomUsers(rid))
+    io.to(rid).emit("roomUsers", getRoomUsers(rid)) 
+    notifyOpenRooms()
   })
 
   
