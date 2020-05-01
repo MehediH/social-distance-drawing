@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG, startGame, nextRound, votePlayer, getGameVotesPerRound, disableGame, updateName} = require("./utils/rooms");
+const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG, startGame, nextRound, votePlayer, getGameVotesPerRound, setGameMode, updateName} = require("./utils/rooms");
 
 const app = express();
 const server = http.createServer(app);
@@ -106,7 +106,7 @@ io.on('connection', (socket) => {
     let room = getRoom(rid);
     let game = room.game;
 
-    let timer = Math.abs(new Date()-new Date(game.timer)) / 1000
+    let timer = Math.abs(Date.now()-game.timer) / 1000
 
     if(timer < 60){
       socket.emit("joinGame", game)
@@ -136,8 +136,8 @@ io.on('connection', (socket) => {
     // }
   })
 
-  socket.on("justDraw", () => {
-    disableGame(rid)
+  socket.on("justDraw", (mode) => {
+    setGameMode(rid, mode)
   })
 
   socket.on("updateName", (newName) => {
@@ -164,8 +164,7 @@ io.on('connection', (socket) => {
     // collision grace for everyone in general
     let {lastCollision} = getRoom(rid)
     
-    let timeNow = new Date();
-    lastCollision = new Date(lastCollision);
+    let timeNow = Date.now();
     let lastCollDiff = Math.abs(timeNow-lastCollision) / 1000
 
     if(lastCollDiff < 5){
@@ -174,7 +173,7 @@ io.on('connection', (socket) => {
 
     // if there's not been a collision in the last 5 seconds
     // we start collision detection
-    let ldP1 = new Date(currentUser.lastDraw);
+    let ldP1 = currentUser.lastDraw;
 
     for(user in updatedUserPositions){  
       user = updatedUserPositions[user];
@@ -184,12 +183,12 @@ io.on('connection', (socket) => {
         let dy = currentUser.y - user.y;
 
         let distance = Math.sqrt((dx * dx) + (dy * dy));
-        let ldP2 = new Date(user.lastDraw);
+        let ldP2 = user.lastDraw;
 
         let timeDiff = Math.abs(ldP2-ldP1) / 1000
 
         if (distance < 8 && timeDiff < 2) {
-          let room = resetRoomCanvas(rid, new Date())
+          let room = resetRoomCanvas(rid, Date.now())
 
           let collision = {
             p1: currentUser,

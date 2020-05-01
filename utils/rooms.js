@@ -141,7 +141,7 @@ function startGame(rid){
   let game = room.game;
 
   game.round = 1;
-  game.timer = new Date();
+  game.timer = Date.now();
   game.currentlyDrawing = pickItemToDraw;
   game.alreadyDrawn.push(pickItemToDraw);
   
@@ -164,7 +164,7 @@ function nextRound(rid){
   let game = room.game;
   
   game.round += 1;
-  game.timer = new Date();
+  game.timer = Date.now();
 
   let pickItemToDraw = itemToDraw();
   while(game.alreadyDrawn.includes(pickItemToDraw)){
@@ -200,12 +200,12 @@ function getGameVotesPerRound(rid, round){
   return room.game.rounds[round]
 }
 
-function disableGame(rid){
+function setGameMode(rid, mode){
   let room = rooms.find(room => room.id === rid);
 
   if(!room){return;}
 
-  room.game.justDraw = true;
+  room.game.justDraw = mode;
 }
 
 function updateName(uid, rid, newName){
@@ -239,6 +239,6 @@ module.exports = {
   nextRound,
   votePlayer,
   getGameVotesPerRound,
-  disableGame,
+  setGameMode,
   updateName
 };

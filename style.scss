@@ -214,6 +214,12 @@ html, body {
     }
   }
 
+  .hide{
+    display: none !important;
+  }
+
+ 
+
   .eraser{
     display: flex;
     align-items: center;
@@ -228,7 +234,7 @@ html, body {
   }
 
   .timer{
-    display: none !important;
+    display: flex;
     transition: 0.3s all ease-in-out;
     cursor: default;
     

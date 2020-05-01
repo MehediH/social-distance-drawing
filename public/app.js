@@ -26,6 +26,8 @@ let firstRnStartBtn = document.querySelector("#first-run .start-fr")
 let firstRnHeader = document.querySelector("#first-run .modal__title")
 let firstRnContent = document.querySelector("#first-run .modal__content")
 let settingsIcon = document.querySelector(".settings")
+let justDrawBtn = document.querySelector(".just-draw")
+
 let brushSize = 10;
 
 
@@ -58,8 +60,8 @@ function joinRoom(userName){
       canvas: [],
       users: [],
       colls: "",
-      lastCollision: new Date(),
-      created: new Date(),
+      lastCollision: Date.now(),
+      created: Date.now(),
       locked: false,
       bg: "white",
       game: {
@@ -103,13 +105,17 @@ socket.on("newId", (data) => {
     drawLine(d.x0*w, d.y0*h, d.x1*w, d.y1*h, d.color, false, null, d.strokeWidth)
   }
 
-  firstRun(!room.game.justDraw)
+  firstRun(room.game)
 })
 
 
 socket.on('roomUsers', (users) => {
-  if(document.querySelector(".just-draw") && users.length > 1){
-    document.querySelector(".just-draw").remove()
+  if(users.length > 1){
+    justDrawBtn.classList.add("hide")
+  } else{
+    if(document.querySelector(".play-game").classList.contains("hide")){
+      justDrawBtn.classList.remove("hide")
+    }
   }
 
   document.querySelector(".player-count span").innerText = users.length;
@@ -245,7 +251,7 @@ function drawLine(x0, y0, x1, y1, color, emit, u, strokeWidth){
     user.style.top = u.y+ "%"
   }
 
-  current.user.lastDraw = new Date();
+  current.user.lastDraw = Date.now();
 
 
   socket.emit('drawing', {
@@ -629,10 +635,14 @@ function showMessage(elem, indicate=true){
   }
 }
 
+let closeByClick;
+
 // first run exp
 // show first run dialog
-function firstRun(show){ 
-  if(show){ 
+function firstRun(game){
+  let justDrawing = game.justDraw;
+
+  if(!justDrawing){ 
     if(!name){
       if(!firstRnContent.querySelector(".updateName") && firstRnPhase === 1){
         firstRnContent.innerHTML += "<label>Set your name (we automagically picked one for you)</label><input type='text' placeholder='Enter your name' value='" + current.user.userName + "' class='updateName'/>"
@@ -646,14 +656,11 @@ function firstRun(show){
     MicroModal.show('first-run', {
       disableScroll: true,
       disableFocus: true,
-      onClose: () => firstRnPhase === 1 ? justDraw() : socket.emit("joinGame")
+      onClose: () => socket.emit("joinGame")
     });
-    let timer = document.querySelector(".timer");
-    if(timer){
-      timer.style = "display: flex !important;"
-    }
+   
   } else{
-    socket.emit("justDraw")
+    justDraw()
   }
 }
 
@@ -700,11 +707,13 @@ socket.on("updatedUserName", updateDetails => {
 
 // user wnats to continue
 firstRnStartBtn.addEventListener("click", () => {
+  closeByClick = closeByClick === false ? true : undefined;
+
   let userCount = document.querySelector(".player-count span").innerText;
   let nameInput = document.querySelector(".modal__content .updateName");
 
   // if user enters name on first run phase
-  if(firstRnPhase === 1 && nameInput != "" && nameInput.value.replace(/\s/g, '') !== current.user.userName){
+  if(firstRnPhase === 1 &&  nameInput && nameInput != "" && nameInput.value.replace(/\s/g, '') !== current.user.userName){
     socket.emit("updateName", nameInput.value.replace(/\s/g, ''))
   }
 
@@ -730,9 +739,11 @@ firstRnStartBtn.addEventListener("click", () => {
 
 })
 
+let appTimer;
+
 function startTimer(duration, display, currentRound) {
   let timer = duration, minutes, seconds;
-  let appTimer = setInterval(function () {
+  appTimer = setInterval(function () {
       minutes = parseInt(timer / 60, 10)
       seconds = parseInt(timer % 60, 10);
 
@@ -766,7 +777,7 @@ socket.on("skipRoundWait", () => {
 // game
 function startGame(game){
   
-  let timer = Math.abs(new Date()-new Date(game.timer)) / 1000;
+  let timer = Math.abs(Date.now()-game.timer) / 1000;
   startTimer(60-timer, document.querySelector(".timer span t"), game.round)
   document.querySelector(".timer span em").innerText = `(round ${game.round})`
   document.querySelector(".timer i").innerText = `draw ${game.currentlyDrawing}`
@@ -836,49 +847,48 @@ function showRanks(clickable, currentRound){
     users.sort((a, b) => b.wins - a.wins)
 
     let content = "<ul class='vote-players'>"
-    content += `${users.map((user, i) => `<li class="player ${!clickable && i === 0 && user.wins > 0 ? "champ" : ""}" playerId="${user.id}">${user.userName}<span><em>👑</em>${user.wins}</span></li>`).join("")}`
+    content += `${users.map((user, i) => `<li class="player ${!clickable && i === 0 && user.wins > 0 ? "champ" : ""}" playerId="${user.id}"><input type="radio" id="${user.id}" name="vote" value="${user.id}"><label for="${user.id}">${user.userName}<span><em>👑</em>${user.wins}</span></label></li>`).join("")}`
     content += "<ul>"
 
     firstRnContent.innerHTML = content;
 
     let playerList = document.querySelector(".vote-players")
 
-    playerList.addEventListener("click", (e) => {
-      if(e.target.classList.contains("player") && clickable){
-        e.target.classList.add("champ")
+    // playerList.addEventListener("click", (e) => {
+    //   if(e.target.classList.contains("player") && clickable){
+    //     e.target.classList.add("champ")
 
-        MicroModal.close()
+    //     MicroModal.close()
 
-        socket.emit("votePlayer", {
-          playerId: e.target.getAttribute("playerId"),
-          round: currentRound
-        })
+    //     socket.emit("votePlayer", {
+    //       playerId: e.target.getAttribute("playerId"),
+    //       round: currentRound
+    //     })
 
-      }
-    })
+    //   }
+    // })
   })
 
 }
 
 function justDraw(){
   let timer = document.querySelector(".timer");
-  if(timer){
-    timer.remove();
-  }
-  socket.emit("justDraw");
+  timer.classList.add("hide")
+  clearInterval(appTimer)
+  socket.emit("justDraw", true);
 }
 
-// just draw, disable game
-document.querySelector(".just-draw").addEventListener("click", () => {
-  MicroModal.close()
-  justDraw()
 
-  let nameInput = document.querySelector(".modal__content .updateName");
+// just draw 
+justDrawBtn.addEventListener("click", () => {
+  document.querySelector(".play-game").classList.remove("hide")
+  justDrawBtn.classList.add("hide")
+  document.querySelector(".currently-drawing").style.display = "none"
+  justDraw();
+})
 
-  console.log(nameInput)
-  // if user enters name on first run phase
-  if(firstRnPhase === 1 && nameInput != "" && nameInput.value.replace(/\s/g, '') !== current.user.userName){
-    socket.emit("updateName", nameInput.value.replace(/\s/g, ''))
-  }
+document.querySelector(".play-game").addEventListener("click", () => {
+  socket.emit("justDraw", false);
+  location.reload();
 
 })
