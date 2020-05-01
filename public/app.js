@@ -447,7 +447,7 @@ function toggleMouse(elem){
 }
 
 toggleMouse(toolbarButtons)
-
+toggleMouse(document.querySelector(".modal__overlay"))
 
 const pickr = Pickr.create({
   el: '.toolbar .custom',
@@ -788,7 +788,7 @@ socket.on("skipRoundWait", () => {
 function startGame(game){
   
   let timer = Math.abs(Date.now()-game.timer) / 1000;
-  startTimer(5-timer, document.querySelector(".timer span t"), game.round)
+  startTimer(60-timer, document.querySelector(".timer span t"), game.round)
   document.querySelector(".timer span em").innerText = `(round ${game.round})`
   document.querySelector(".timer i").innerText = `draw ${game.currentlyDrawing}`
 
@@ -929,7 +929,7 @@ socket.on("gameFinish", () => {
     disableScroll: true,
     disableFocus: true
   });
-  
+
   justDraw(true);
  
 })
