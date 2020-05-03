@@ -28,7 +28,7 @@ function getRoom(id) {
 
 // create room
 function createRoom(room){
-    
+    room.id = room.id.replace(/[^a-zA-Z0-9-_]/g, '')
     rooms.push(room)
 
     return room;

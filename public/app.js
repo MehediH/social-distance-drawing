@@ -27,7 +27,7 @@ let firstRnHeader = document.querySelector("#first-run .modal__title")
 let firstRnContent = document.querySelector("#first-run .modal__content")
 let settingsIcon = document.querySelector(".settings")
 let justDrawBtn = document.querySelector(".just-draw")
-
+let chatAutoClose;
 let brushSize = 10;
 
 
@@ -560,14 +560,16 @@ document.addEventListener("keydown", (e) => {
 settingsIcon.addEventListener("click", (e) => {
   playerCount.classList.toggle("hide-settings")
 })
+
 // close user box
-// document.addEventListener("click", (e) => {
-//   if(!e.target.closest(".player-count")){
-//     if(playerCount.classList.contains("open")){
-//       playerCount.classList.remove("open")
-//     }
-//   }
-// })
+document.addEventListener("click", (e) => {
+  if(chatAutoClose && !e.target.closest(".player-count") && !e.target.closest(".settings")){
+    if(playerCount.classList.contains("open")){
+      playerCount.classList.remove("open")
+      settingsIcon.classList.toggle("display")
+    }
+  }
+})
 
 // add invite link
 let shareLinkBox = document.querySelector(".shareLink")
@@ -933,3 +935,24 @@ socket.on("gameFinish", () => {
   justDraw(true);
  
 })
+
+let chatCloseBoxes = document.querySelectorAll("input[name='chatClose']")
+let chatCloseBtn = document.querySelector("input[name='chatClose']")
+
+document.querySelector(".player-count").addEventListener("change", (e) => {
+  if(e.target.name !== "chatClose"){ return; }
+  
+  localStorage.setItem("sddChat", e.target.checked)
+  changeChatAutoInputs(e.target.checked);
+})
+
+let isAutoClose = localStorage.getItem("sddChat") === "true" ? true : false;
+changeChatAutoInputs(isAutoClose);
+
+function changeChatAutoInputs(val){
+  chatAutoClose = val;
+  for(let i = 0; i < chatCloseBoxes.length; i++){
+    let e = chatCloseBoxes[i];
+    e.checked = val;
+  }
+}

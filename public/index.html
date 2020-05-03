@@ -53,8 +53,8 @@
         submit.addEventListener("click", (e) => {
             e.preventDefault()
 
-            let roomVal = document.querySelector("#room").value.replace(/\s/g, '')
-            let nameVal = document.querySelector("#name").value.replace(/\s/g, '')
+            let roomVal = document.querySelector("#room").value.replace(/[^a-zA-Z0-9-_]/g, '')
+            let nameVal = document.querySelector("#name").value.replace(/[^a-zA-Z0-9-_]/g, '')
 
             if(roomVal === ""){
                 roomVal = names[getIndex(names.length)] + "-" + animals[getIndex(animals.length)]
