@@ -1135,77 +1135,78 @@ button.btn-d, a.btn-d{
     padding: 0px;
     margin-top: 10px;
   }
-}
-
-.open{
-  position: relative !important;
-  width: 500px;
-  top: 0;
-  transform: translateX(-50%);
-  padding: 50px 0;
-}
-
-.open-rooms{
-  list-style-type: none;
-  padding: 0px;
-
-  li{
-    margin-bottom: 10px;
+  
+  .open{
+    position: relative !important;
+    width: 500px;
+    top: 0;
+    transform: translateX(-50%);
+    padding: 50px 0;
   }
-
-  .disable{
-    border-color: #333;
-    color: #333;
-    cursor: not-allowed;
-
-    &:hover{
+  
+  .open-rooms{
+    list-style-type: none;
+    padding: 0px;
+   
+    li{
+      margin-bottom: 10px;
+    }
+  
+    .disable{
+      border-color: #333;
       color: #333;
-      background-color: transparent;
-
-      span{
+      cursor: not-allowed;
+  
+      &:hover{
         color: #333;
+        background-color: transparent;
+  
+        span{
+          color: #333;
+        }
       }
     }
-  }
-
-  a{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    color: #ff5677;
-    border: 3px solid #ff5677;
-    background-color: transparent;
-    font-weight: 800;
-    transition: 0.2s all ease-in-out;
-
-    &:hover{
-      background-color: #ff5677;
-      color: #fff;
-
-      span{
+  
+    a{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      border-radius: 5px;
+      text-decoration: none;
+      color: #ff5677;
+      border: 3px solid #333;
+      background-color: transparent;
+      font-weight: 800;
+      transition: 0.2s all ease-in-out;
+  
+      &:hover{
+        background-color: #ff5677;
+        border: 3px solid #ff5677;
         color: #fff;
+  
+        span{
+          color: #fff;
+        }
       }
     }
-  }
-
-  span{
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    p{
-      margin: 0px;
-      padding: 0px;
-      font-weight: normal;
-    }
-
-    svg{
-      width: 22px;
-      padding-right: 5px;
+  
+    span{
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  
+      p{
+        margin: 0px;
+        padding: 0px;
+        font-weight: normal;
+      }
+  
+      svg{
+        width: 22px;
+        padding-right: 5px;
+      }
     }
   }
 }
