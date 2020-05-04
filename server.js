@@ -56,7 +56,7 @@ io.on('connection', (socket) => {
     notifyOpenRooms()
 
   })
-
+  
 
   socket.on('drawing', (data) => {
     let updatedUserPositions = updateRoomCanvas(rid, data)
@@ -182,7 +182,13 @@ io.on('connection', (socket) => {
     notifyOpenRooms()
   })
 
-  
+  socket.on("sending signal", payload => {
+    io.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
+  });
+
+  socket.on("returning signal", payload => {
+    io.to(payload.callerID).emit('receiving returned signal', { signal: payload.signal, id: socket.id });
+  });
 
   function checkCollisions(currentUser, updatedUserPositions){
     // collision grace for everyone in general
@@ -232,6 +238,6 @@ io.on('connection', (socket) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
