@@ -129,13 +129,19 @@ socket.on('roomUsers', (users) => {
 
   // set audio room list
   users = users.filter(user => user.inAudio)
-  console.log(users)
-  let audioUsers = users.map((user) => `<li id="u${user.id}-audio" ${user.muted ? "class='muted'" : ""} style="border-bottom-color: ${user.avatar}">${user.userName}<span class="mic"><i data-feather="mic"></i><i data-feather="mic-off"></i></span></li>`).join(" ");
-  document.querySelector(".calls .users").innerHTML = audioUsers;
 
-  feather.replace() // load icons
-
-
+  if(users.length === 0){
+    document.querySelector(".calls .warn").innerText = `Looks like you are the only one here! You can join the room now, and others can join you whenever they want.`;
+    document.querySelector(".calls .block-title").style.display = "none";
+    document.querySelector(".calls .warn").style.display = "block";
+    document.querySelector(".calls .users").innerHTML = "";
+  } else{
+    document.querySelector(".calls .warn").style.display = "none";
+    document.querySelector(".calls .block-title").style.display = "block";
+    let audioUsers = users.map((user) => `<li id="u${user.id}-audio" ${user.muted ? "class='muted'" : ""} style="border-bottom-color: ${user.avatar}">${user.userName}<span class="mic"><i data-feather="mic"></i><i data-feather="mic-off"></i></span></li>`).join(" ");
+    document.querySelector(".calls .users").innerHTML = audioUsers;
+    feather.replace() // load icons
+  }
 });
 
 // add a new player to DOM

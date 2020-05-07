@@ -20,7 +20,7 @@ joinBtn.addEventListener("click", () => {
         userJoined = false;
         peersRef = [];
         userPeers = [];
-        joinBtn.innerText = "Join with audio"
+        joinBtn.innerText = "Join Room"
 
         activeAudios.innerHTML = "";
 
@@ -52,7 +52,7 @@ let joinAudioRoom = (userAudio) => {
         userAudio.srcObject = stream;
         localStream = stream;
 
-        joinBtn.innerText = "Leave audio room";
+        joinBtn.innerText = "Leave Room";
 
         document.querySelector(".calls .mute-call").style.display = "block"
 
@@ -85,7 +85,6 @@ let joinAudioRoom = (userAudio) => {
         })
 
         socket.on("userJoinedAudio", payload => {
-            
             const item = peersRef.find(p => p.peerID ===  payload.callerID);
             if(item){return;}
 

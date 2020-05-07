@@ -629,7 +629,7 @@ html, body {
 
 .player-count.open{
   div.icn, span{
-    background-color: black;
+    background-color: black !important;
     color: #fff;
   }
 
@@ -663,7 +663,19 @@ html, body {
     display: none;
   }
 
+  .call-actions{
+    display: grid !important;
+    width: 100% !important;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 15px;
+
+    button{
+      width: 100%;
+    }
+  }
+
   .users{
+
     li{
       display: flex;
       height: 50px;
