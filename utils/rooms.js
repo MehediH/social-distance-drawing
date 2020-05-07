@@ -5,8 +5,8 @@ function getRooms(){
 }
 
 // Join user 
-function userJoin(id, userName, avatar, x, y, pX, pY, room) {
-  const user = { id, userName, avatar, x, y, pX, pY, lastDraw: ""};
+function userJoin(id, userName, avatar, x, y, pX, pY, room, inCall, muted) {
+  const user = { id, userName, avatar, x, y, pX, pY, lastDraw: "", inCall, muted};
 
   const foundRoom = rooms.find(r => r.id === room.id);
 
@@ -192,13 +192,6 @@ function votePlayer(rid, playerId, round){
   }
 }
 
-function getGameVotesPerRound(rid, round){
-  let room = rooms.find(room => room.id === rid);
-
-  if(!room){return;}
-
-  return room.game.rounds[round]
-}
 
 function setGameMode(rid, mode){
   let room = rooms.find(room => room.id === rid);
@@ -223,6 +216,34 @@ function updateName(uid, rid, newName){
   return {oldName, user};
 }
 
+function userSetAudio(rid, uid, status){
+  const room = rooms.find(r => r.id === rid);
+
+  if(!room){return;}
+
+  const user = room.users.find(user => user.id === uid)
+
+  if(!user){return;}
+
+  user.inAudio = status;
+
+  return user.inAudio;
+}
+
+function userSetMute(rid, uid, muteStatus){
+  const room = rooms.find(r => r.id === rid);
+
+  if(!room){return;}
+
+  const user = room.users.find(user => user.id === uid)
+
+  if(!user){return;}
+
+  user.muted = muteStatus;
+
+  return user.muted;
+}
+
 module.exports = {
   getRooms,
   getRoom,
@@ -238,7 +259,8 @@ module.exports = {
   startGame,
   nextRound,
   votePlayer,
-  getGameVotesPerRound,
+  userSetAudio,
+  userSetMute,
   setGameMode,
   updateName
 };

@@ -22,15 +22,38 @@
 
       </div>
       <div class="btn fill no-text" title="Fill canvas"><div><i data-feather="droplet"></i></div></div>
-      <div class="btn clear" title="Clear canvas"><div><i data-feather="trash-2"></i></div><span>Clear</span></div>
-      <div class="btn lock" title="Lock room"><div><i data-feather="lock"></i><i data-feather="unlock"></i></div><span>Lock room</span></div>
-      <div class="btn timer" title="Timer for this round"><div><i data-feather="clock"></i></div><span><b><t>00:00</t><em>(waiting)</em></b><i>draw anything</i></span></div>
-      <div class="btn just-draw" title="Disable game and just draw"><div><i data-feather="pen-tool"></i></div><span>Just draw</span></div>
-      <div class="btn play-game hide" title="Play game"><div><i data-feather="crosshair"></i></div><span>Play Game</span></div>
+      <div class="btn clear" title="Clear canvas"><div><i data-feather="trash-2"></i></div><span class="btn-label">Clear</span></div>
+      <div class="btn lock" title="Lock room"><div><i data-feather="lock"></i><i data-feather="unlock"></i></div><span class="btn-label">Lock room</span></div>
+      <div class="btn timer" title="Timer for this round"><div><i data-feather="clock"></i></div><span class="btn-label"><b><t>00:00</t><em>(waiting)</em></b><i>draw anything</i></span></div>
+      <div class="btn just-draw" title="Disable game and just draw"><div><i data-feather="pen-tool"></i></div><span class="btn-label">Just draw</span></div>
+      <div class="btn play-game hide" title="Play game"><div><i data-feather="crosshair"></i></div><span class="btn-label">Play Game</span></div>
       
+
+      <div class="btn calls has-dropdown">
+        <div><i data-feather="users"></i></div>
+        <span class="btn-label">Audio Room</span>
+
+        <div class="dropdown">
+          <div class="inner">
+            <button class="btn-d join-call">Join room</button>
+            <button class="btn-d mute-call">Mute</button>
+
+            <span class="block-title">Currently in the room</span>
+            <ul class="users">
+
+            </ul>
+            <ul class="audios">
+
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <div class="btn no-text settings" title="Change your name"><div><i data-feather="settings"></i></div></div>
+      
+
       <div class="btn player-count has-dropdown hide-settings" title="Players in the room">
-        <a href="#"><div class="icn"><i data-feather="message-circle"></i><i data-feather="x-circle"></i></div><span>0</span><em class="unread"></em></a>
+        <div class="icn"><i data-feather="message-circle"></i><i data-feather="x-circle"></i></div><span class="btn-label">0</span><em class="unread"></em>
         <div class="dropdown">
           <div class="inner">
             <p>Share the link below to invite others!</p>
@@ -80,14 +103,17 @@
     </div>
   </div>
         
-  
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.2/qs.min.js" integrity="sha256-TDxXjkAUay70ae/QJBEpGKkpVslXaHHayklIVglFRT4=" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
   
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.es5.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
   <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
+  <script src="/alert.js"></script>
   <script src="/app.js"></script>
+  <script src="./lib/simplepeer.min.js"></script>
+  <script src="./lib/calls.js"></script>
 
 </body>
 </html>

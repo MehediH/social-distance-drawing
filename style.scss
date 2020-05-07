@@ -306,7 +306,7 @@ html, body {
       
     }
 
-    span{
+    span.btn-label{
       background-color: #fff;
       display: block;
       height: 50px;
@@ -422,7 +422,6 @@ html, body {
     }
 
     .dropdown{
-      overflow: hidden;
 
       .inner{
         position: relative;
@@ -576,6 +575,10 @@ html, body {
 
   .has-dropdown{
 
+    &:hover{
+      opacity: 1;
+    }
+
     a{
       display: flex;
       align-items: center;
@@ -591,6 +594,7 @@ html, body {
       width: 350px;
       top: 30px;
       right: 0px;
+      overflow: hidden;
       margin-top: 2rem;
       border-radius: 20px;
       background-color: #fff;
@@ -618,6 +622,9 @@ html, body {
     }
   }
 
+  
+  
+
 }
 
 .player-count.open{
@@ -638,6 +645,56 @@ html, body {
   .dropdown{
     opacity: 1;
     pointer-events: auto;
+  }
+}
+
+.calls{
+
+
+  .block-title{
+    display: block;
+    margin-top: 20px;
+    font-weight: 800;
+    font-size: 19px;
+  }
+
+  .mute-call{
+    margin-left: 10px;
+    display: none;
+  }
+
+  .users{
+    li{
+      display: flex;
+      height: 50px;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #e9eaed;
+      padding: 0 20px;
+      border-radius: 10px;
+      border-bottom: 5px solid;
+      margin-bottom: 10px;
+
+
+      svg{
+        width: 18px;
+        margin-top: 5px;
+      }
+
+      .feather-mic-off{
+        display: none;
+      }
+    }
+
+    .muted{
+      .feather-mic-off{
+        display: block;
+      }
+
+      .feather-mic{
+        display: none;
+      }
+    }
   }
 }
 

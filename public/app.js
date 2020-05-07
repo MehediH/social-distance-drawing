@@ -8,6 +8,8 @@ if(!room){
   window.location = "/"
 }
 
+
+
 const socket = io();
 
 let canvas = document.getElementsByClassName('whiteboard')[0];
@@ -49,6 +51,9 @@ socket.on("connect", () => {
   }
   
   joinRoom(name)
+
+  
+
 })
 
 
@@ -80,6 +85,7 @@ function joinRoom(userName){
 
 // update user id for current player
 socket.on("newId", (data) => {
+  
   let {user, room} = data;
 
   let u = document.querySelector(".user");
@@ -105,7 +111,8 @@ socket.on("newId", (data) => {
     drawLine(d.x0*w, d.y0*h, d.x1*w, d.y1*h, d.color, false, null, d.strokeWidth)
   }
 
-  firstRun(room.game)
+  firstRun({...room.game, justDraw: true})
+  // firstRun(room.game)
 })
 
 
@@ -119,10 +126,21 @@ socket.on('roomUsers', (users) => {
   }
 
   document.querySelector(".player-count span").innerText = users.length;
+
+  // set audio room list
+  users = users.filter(user => user.inAudio)
+  console.log(users)
+  let audioUsers = users.map((user) => `<li id="u${user.id}-audio" ${user.muted ? "class='muted'" : ""} style="border-bottom-color: ${user.avatar}">${user.userName}<span class="mic"><i data-feather="mic"></i><i data-feather="mic-off"></i></span></li>`).join(" ");
+  document.querySelector(".calls .users").innerHTML = audioUsers;
+
+  feather.replace() // load icons
+
+
 });
 
 // add a new player to DOM
 socket.on("newUser", (user) => {
+  
   let newPlayer = document.getElementById(user.id)
 
   if(!newPlayer){
@@ -149,7 +167,9 @@ socket.on("collided", (collision) => {
 
   updateCanvasColor(collision.bg);
 
-  showMessage(`<li class="status collision"><p>${collision.p1.userName} & ${collision.p2.userName} collided</p></li>`, false)
+  showMessage(`<li class="status collision"><p>${collision.p1.userName} & ${collision.p2.userName} broke social distance!</p></li>`, false)
+
+  playAlert('submarine')
 
   setTimeout(() => {
     document.body.classList.remove("collided")
@@ -183,11 +203,12 @@ function startListening(user){
   canvas.addEventListener('mouseout', onMouseUp, false);
   canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
 
-  //Touch support for mobile devices
-  canvas.addEventListener('touchstart', onMouseDown, false);
-  canvas.addEventListener('touchend', onMouseUp, false);
-  canvas.addEventListener('touchcancel', onMouseUp, false);
-  canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
+
+  // //Touch support for mobile devices
+  // canvas.addEventListener('touchstart', onMouseDown, false);
+  // canvas.addEventListener('touchend', onMouseUp, false);
+  // canvas.addEventListener('touchcancel', onMouseUp, false);
+  // canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
 
   // for (var i = 0; i < colors.length; i++){
   //   colors[i].addEventListener('click', onColorUpdate, false);
@@ -542,6 +563,7 @@ playerCount.addEventListener("click", (e) => {
   }
 })
 
+
 document.addEventListener("keydown", (e) => {
   if(e.keyCode === 27 && playerCount.classList.contains("open")){
     playerCount.classList.remove("open")
@@ -554,6 +576,9 @@ document.addEventListener("keydown", (e) => {
     settingsIcon.classList.toggle("display")
   }
 
+  // if(e.keyCode === 16){
+  //   drawing = !drawing;
+  // }
 })
 
 // settigs open
@@ -623,6 +648,10 @@ socket.on("rcvMessage", (message) => {
   if(!user){
     return;
   }
+
+  // if(message.uid !== current.user.id){
+  //   playAlert('morse')
+  // }
 
   showMessage(`<li class="${message.uid === current.user.id ? "own": ""}"><p class="msg" style="border-bottom: 5px solid ${message.accent}"><em>${message.userName}</em><span>${message.text}</span></p></li>`)
 })
@@ -956,3 +985,21 @@ function changeChatAutoInputs(val){
     e.checked = val;
   }
 }
+
+function dropdown(elem, className){
+  elem.addEventListener("click", (e) => {
+    if(!e.target.closest(".dropdown")){
+      elem.classList.toggle("open")
+    }
+  })
+
+  // close user box
+  document.addEventListener("click", (e) => {
+    if(!e.target.closest(className)){
+      if(elem.classList.contains("open")){
+        elem.classList.remove("open")
+      }
+    }
+  })
+}
+

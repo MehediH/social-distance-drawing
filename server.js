@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG, startGame, nextRound, votePlayer, getGameVotesPerRound, setGameMode, updateName} = require("./utils/rooms");
+const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG, startGame, nextRound, votePlayer, userSetAudio, setGameMode, updateName, userSetMute} = require("./utils/rooms");
 
 const app = express();
 const server = http.createServer(app);
@@ -42,7 +42,7 @@ io.on('connection', (socket) => {
     // random color
     let rc = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
 
-    let user = userJoin(socket.id, userName, rc, 0, 0, 0, 0, room)
+    let user = userJoin(socket.id, userName, rc, 0, 0, 0, 0, room, false, false)
 
     uid = socket.id;
 
@@ -182,12 +182,32 @@ io.on('connection', (socket) => {
     notifyOpenRooms()
   })
 
-  socket.on("sending signal", payload => {
-    io.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
+  socket.on("joinAudio", () => {
+    userSetAudio(rid, uid, true)
+
+    io.to(rid).emit("loadExistingAudios", getRoomUsers(rid)) 
+    io.to(rid).emit("roomUsers", getRoomUsers(rid)) 
+  })
+
+  socket.on("leaveAudio", () => {
+    userSetAudio(rid, uid, false)
+
+    io.to(rid).emit("loadExistingAudios", getRoomUsers(rid)) 
+    io.to(rid).emit("roomUsers", getRoomUsers(rid)) 
+  })
+
+  socket.on("setMute", (status) => {
+    userSetMute(rid, uid, status)
+
+    io.to(rid).emit("updateParticipantMute", {uid, status})  
+  })
+
+  socket.on("sendSig", payload => {
+    socket.broadcast.to(payload.userToSignal).emit('userJoinedAudio', { signal: payload.signal, callerID: payload.callerID });
   });
 
-  socket.on("returning signal", payload => {
-    io.to(payload.callerID).emit('receiving returned signal', { signal: payload.signal, id: socket.id });
+  socket.on("returnSig", payload => {
+    io.to(payload.callerID).emit('rcvSig', { signal: payload.signal, id: socket.id });
   });
 
   function checkCollisions(currentUser, updatedUserPositions){
