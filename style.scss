@@ -700,21 +700,40 @@ html, body {
         margin-top: 5px;
       }
 
+      .usr{
+        display: flex;
+        align-items: center;
+
+        .mic{
+          margin-right: 10px;
+        }
+      }
+
       .feather-mic-off{
         display: none;
       }
 
+      .silence{
+        cursor: pointer;
 
-      .feather-volume{
+        &:hover{
+          opacity: 0.75;
+        }
+      }
+    }
+
+    .silence[muted="false"]{
+      .feather-volume-x{
         display: none;
       }
     }
 
-    .silenced{
+    .silence[muted="true"]{
       .feather-volume-2{
         display: none;
       }
     }
+
 
     .muted{
       .feather-mic-off{

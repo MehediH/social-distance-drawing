@@ -207,6 +207,7 @@ socket.on("updateParticipantMute", (data) => {
 
     let userAudio = document.getElementById(`u${uid}-audio`)
     let audioElem = document.getElementById(`${uid}-audio`)
+    let isSilenced = document.querySelector(`.calls .users .silence[data-user='${uid}']`);
 
     if(userAudio && status){
         userAudio.classList.add("muted")
@@ -221,7 +222,7 @@ socket.on("updateParticipantMute", (data) => {
     if(userAudio && !status){
         userAudio.classList.remove("muted")
         
-        if(audioElem && uid !== current.user.id){
+        if(audioElem && uid !== current.user.id && isSilenced === "false"){
             audioElem.muted = false;
         }
 
@@ -259,3 +260,19 @@ if(autoJoin){
     let userAudio = createUserAudio(current.user.id, true);
     joinAudioRoom(userAudio);
 }
+
+document.querySelector(".calls .users").addEventListener("click", (e) => {
+    if(e.target.classList.contains("silence")){
+       let uid = e.target.getAttribute("data-user");
+       let uAudio = document.getElementById(`${uid}-audio`);
+       let muteStatus = e.target.getAttribute("muted");
+
+       if(muteStatus === "true"){
+            uAudio.muted = false;
+            e.target.setAttribute("muted", false);
+       } else{
+            uAudio.muted = true;
+            e.target.setAttribute("muted", true);
+       }
+    }
+})
