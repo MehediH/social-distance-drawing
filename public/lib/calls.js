@@ -10,28 +10,6 @@ let joinBtn = document.querySelector(".join-call")
 let activeAudios = document.querySelector(".calls .audios")
 let localStream;
 
-joinBtn.addEventListener("click", () => {
-    if(!userJoined){
-        let userAudio = createUserAudio(current.user.id, true);
-        joinAudioRoom(userAudio);
-       
-    } else{
-        document.querySelector(".calls .mute-call").style.display = "none"
-
-        userJoined = false;
-        joinBtn.innerText = "Join Room"
-
-        activeAudios.innerHTML = "";
-
-        localStream.getTracks()[0].stop();
-
-        let userInRoom = document.getElementById(`u${current.user.id}-audio`);
-        if(userInRoom) userInRoom.remove()
-
-        socket.emit("leaveAudio")
-    }
-})
-
 let prependElement = (to, elem) => {
     to.insertBefore(elem, to.firstChild)
 }
@@ -47,11 +25,45 @@ let createUserAudio = (id, muted=false) => {
     return document.getElementById(`${id}-audio`)
 }
 
+
+joinBtn.addEventListener("click", () => {
+    if(userJoined === -1){
+        if(window.location.href.indexOf("name=") === -1){
+            window.location.href += `&name=${current.user.userName}${autoJoin ? "" : "&autoJoin=true"}`
+        } else{
+            window.location.href += `${autoJoin ? "" : "&autoJoin=true"}`
+        }
+    }
+    if(!userJoined){
+        let userAudio = createUserAudio(current.user.id, true);
+        joinAudioRoom(userAudio);
+       
+    } else{
+        document.querySelector(".calls .mute-call").style.display = "none"
+
+        userJoined = -1;
+        joinBtn.innerText = "Join Room"
+
+        activeAudios.innerHTML = "";
+
+        localStream.getTracks()[0].stop();
+
+        let userInRoom = document.getElementById(`u${current.user.id}-audio`);
+        if(userInRoom) userInRoom.remove()
+
+        socket.emit("leaveAudio")
+    }
+})
+
+
 let joinAudioRoom = (userAudio) => {
     
     navigator.mediaDevices.getUserMedia({ video: false, audio: true}).then(stream => {
         userJoined = true; // set user is in call to true
         userAudio.srcObject = stream;
+
+        console.log(stream.getTracks()[0].label)
+
         localStream = stream;
         joinBtn.innerText = "Leave Room";
 
@@ -86,31 +98,34 @@ let joinAudioRoom = (userAudio) => {
             socket.off("loadExistingAudios")
         })
 
-        socket.on("userJoinedAudio", payload => {
-            const item = peersRef.find(p => p.peerID ===  payload.callerID);
-            if(item){return;}
-
-            const peer = addPeer(payload.signal, payload.callerID, stream);
-
-            peersRef.push({
-                peerID: payload.callerID,
-                peer,
-            })
-
-            userPeers = [...userPeers, peer]
-
-            let audioElem = createUserAudio(payload.callerID)
-            addParticipant(peer, audioElem)
-        });
-
-        socket.on("rcvSig", payload => {
-            const item = peersRef.find(p => p.peerID === payload.id);
-            item.peer.p.signal(payload.signal);
-        });
+       
     }).catch((err) => {
         alert(`${err.message} - couldn't connect to your microphone. Make sure you have allowed the game to use your microphone on your browser!`)
     })
 }
+
+socket.on("userJoinedAudio", payload => {
+    const item = peersRef.find(p => p.peerID ===  payload.callerID);
+    if(item){return;}
+    console.log("NEW")
+
+    const peer = addPeer(payload.signal, payload.callerID, localStream);
+
+    peersRef.push({
+        peerID: payload.callerID,
+        peer,
+    })
+
+    userPeers = [...userPeers, peer]
+
+    let audioElem = createUserAudio(payload.callerID)
+    addParticipant(peer, audioElem)
+});
+
+socket.on("rcvSig", payload => {
+    const item = peersRef.find(p => p.peerID === payload.id);
+    item.peer.p.signal(payload.signal);
+});
 
 let loadParticipants = (userPeers) => {
     for(let i = 0; i < userPeers.length; i++){        
@@ -135,7 +150,7 @@ let createPeer = (userToSignal, callerID, stream) => {
         id: callerID,
         p: new SimplePeer({
             initiator: true,
-            trickle: true,
+            trickle: false,
             stream,
         })
     }
@@ -153,7 +168,7 @@ let addPeer = (incomingSignal, callerID, stream) => {
         id: callerID,
         p: new SimplePeer({
             initiator: false,
-            trickle: true,
+            trickle: false,
             stream,
         })
     }
@@ -225,7 +240,6 @@ socket.on("participantLeft", uid => {
     
     // let findUserOnRef = peersRef.findIndex(peer => peer.peerID === uid)
     // if(findUserOnRef !== -1){
-    //     peersRef[findUserOnRef].peer.p.destroy()
     //     peersRef.splice(findUserOnRef, 1)
     // }
     
@@ -236,3 +250,8 @@ socket.on("participantLeft", uid => {
     // }
 
 })
+
+if(autoJoin){
+    let userAudio = createUserAudio(current.user.id, true);
+    joinAudioRoom(userAudio);
+}

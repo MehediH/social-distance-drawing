@@ -649,7 +649,10 @@ html, body {
 }
 
 .calls{
-
+  .dropdown{
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
 
   .block-title{
     display: block;
@@ -658,7 +661,7 @@ html, body {
     font-size: 19px;
   }
 
-  .mute-call{
+  .mute-call{ 
     margin-left: 10px;
     display: none;
   }

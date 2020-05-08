@@ -1,6 +1,6 @@
 
 
-let { room, name} = Qs.parse(location.search, {
+let { room, name, autoJoin} = Qs.parse(location.search, {
   ignoreQueryPrefix: true
 });
 

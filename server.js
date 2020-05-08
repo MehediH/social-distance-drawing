@@ -202,7 +202,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on("sendSig", payload => {
-    socket.broadcast.to(payload.userToSignal).emit('userJoinedAudio', { signal: payload.signal, callerID: payload.callerID });
+    io.to(payload.userToSignal).emit('userJoinedAudio', { signal: payload.signal, callerID: payload.callerID });
   });
 
   socket.on("returnSig", payload => {
