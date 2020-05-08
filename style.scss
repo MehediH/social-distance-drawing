@@ -703,6 +703,17 @@ html, body {
       .feather-mic-off{
         display: none;
       }
+
+
+      .feather-volume{
+        display: none;
+      }
+    }
+
+    .silenced{
+      .feather-volume-2{
+        display: none;
+      }
     }
 
     .muted{

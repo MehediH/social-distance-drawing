@@ -138,7 +138,7 @@ socket.on('roomUsers', (users) => {
   } else{
     document.querySelector(".calls .warn").style.display = "none";
     document.querySelector(".calls .block-title").style.display = "block";
-    let audioUsers = users.map((user) => `<li id="u${user.id}-audio" ${user.muted ? "class='muted'" : ""} style="border-bottom-color: ${user.avatar}">${user.userName}<span class="mic"><i data-feather="mic"></i><i data-feather="mic-off"></i></span></li>`).join(" ");
+    let audioUsers = users.map((user) => `<li id="u${user.id}-audio" ${user.muted ? "class='muted'" : ""} style="border-bottom-color: ${user.avatar}">${user.userName}<span><span class="mic"><i data-feather="mic"></i><i data-feather="mic-off"></i></span class="icn"><span class="silence"><i data-feather="volume-2"></i><i data-feather="volume"></i></span></span></li>`).join(" ");
     document.querySelector(".calls .users").innerHTML = audioUsers;
     feather.replace() // load icons
   }
