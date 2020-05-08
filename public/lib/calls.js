@@ -44,6 +44,8 @@ joinBtn.addEventListener("click", () => {
         userJoined = -1;
         joinBtn.innerText = "Join Room"
 
+        document.querySelector(".calls .info").innerText = `Using microphone: ${localStream.getTracks()[0].label} - click the button below to join!`
+
         activeAudios.innerHTML = "";
 
         localStream.getTracks()[0].stop();
@@ -62,7 +64,7 @@ let joinAudioRoom = (userAudio) => {
         userJoined = true; // set user is in call to true
         userAudio.srcObject = stream;
 
-        console.log(stream.getTracks()[0].label)
+        document.querySelector(".calls .info").innerText = `Using microphone: ${stream.getTracks()[0].label}`
 
         localStream = stream;
         joinBtn.innerText = "Leave Room";
@@ -136,9 +138,11 @@ let loadParticipants = (userPeers) => {
 
 
 let addParticipant = (peer, audioElem) => {  
-    console.log("added peer ", peer)
+
+    document.querySelector(".calls .info").innerText = `Using microphone: ${localStream.getTracks()[0].label} - connecting...`
+
     peer.p.on("stream", stream => {
-        console.log("on stream", stream)
+        document.querySelector(".calls .info").innerText = `Using microphone: ${localStream.getTracks()[0].label} - connected!`
         audioElem.srcObject = stream;
     })
 
@@ -238,16 +242,16 @@ socket.on("participantLeft", uid => {
     }
 
     
-    // let findUserOnRef = peersRef.findIndex(peer => peer.peerID === uid)
-    // if(findUserOnRef !== -1){
-    //     peersRef.splice(findUserOnRef, 1)
-    // }
+    let findUserOnRef = peersRef.findIndex(peer => peer.peerID === uid)
+    if(findUserOnRef !== -1){
+        peersRef.splice(findUserOnRef, 1)
+    }
     
-    // let findUserOnPeers = userPeers.findIndex(peer => peer.id === uid)
+    let findUserOnPeers = userPeers.findIndex(peer => peer.id === uid)
     
-    // if(findUserOnPeers !== -1){
-    //     userPeers.splice(findUserOnPeers, 1)
-    // }
+    if(findUserOnPeers !== -1){
+        userPeers.splice(findUserOnPeers, 1)
+    }
 
 })
 
