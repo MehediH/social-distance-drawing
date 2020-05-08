@@ -80,6 +80,8 @@ html, body {
   animation: outwest 1s 0s forwards ease-in-out;
 }
 
+
+
 .welcome{
   position: absolute;
   top: 50%;
@@ -90,6 +92,46 @@ html, body {
     font-size: 50px;
     margin: 0px;
     padding-bottom: 20px;
+  }
+
+  .intro{
+    margin: 0px;
+    margin-bottom: 20px;
+    max-width: 490px;
+    font-size: 19px;
+    line-height: 40px;
+
+    em{
+      font-weight: normal !important;
+    }
+
+    .s2{
+      background-color: #b650e8;
+      box-shadow: 4px 6px 0px #30312d;
+    }
+
+    .s3{
+      background-color: #da1515;
+      box-shadow: 4px 6px 0px #1ab5ff;
+    }
+
+    .s4{ 
+      background-color: #673fc7;
+      box-shadow: 4px 6px 0px #ff5677;
+    }
+    
+
+    .s1{
+      background-color: #ff5677;
+      box-shadow: 4px 6px 0px blue;
+    }
+
+    span{
+      margin-right: 10px;
+      padding: 0 5px;
+      color: #fff;
+      animation: stargazing 1s 0.2s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
   }
 
   label{
@@ -649,10 +691,10 @@ html, body {
 }
 
 .calls{
-  .dropdown{
-    opacity: 1 !important;
-    pointer-events: auto !important;
-  }
+  // .dropdown{
+  //   opacity: 1 !important;
+  //   pointer-events: auto !important;
+  // }
   
   .btn-d{
     margin-top: 0px !important;
