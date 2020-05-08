@@ -14,17 +14,19 @@ joinBtn.addEventListener("click", () => {
     if(!userJoined){
         let userAudio = createUserAudio(current.user.id, true);
         joinAudioRoom(userAudio);
+       
     } else{
         document.querySelector(".calls .mute-call").style.display = "none"
 
         userJoined = false;
-        peersRef = [];
-        userPeers = [];
         joinBtn.innerText = "Join Room"
 
         activeAudios.innerHTML = "";
 
         localStream.getTracks()[0].stop();
+
+        let userInRoom = document.getElementById(`u${current.user.id}-audio`);
+        if(userInRoom) userInRoom.remove()
 
         socket.emit("leaveAudio")
     }
@@ -51,7 +53,6 @@ let joinAudioRoom = (userAudio) => {
         userJoined = true; // set user is in call to true
         userAudio.srcObject = stream;
         localStream = stream;
-
         joinBtn.innerText = "Leave Room";
 
         document.querySelector(".calls .mute-call").style.display = "block"
@@ -73,14 +74,15 @@ let joinAudioRoom = (userAudio) => {
                 })
 
                 peers.push({
-                    uid: user,
+                    id: user,
                     peer
                 });
             })
 
+            loadParticipants(peers)
             userPeers = peers;
-            loadParticipants(userPeers)
 
+          
             socket.off("loadExistingAudios")
         })
 
@@ -103,7 +105,7 @@ let joinAudioRoom = (userAudio) => {
 
         socket.on("rcvSig", payload => {
             const item = peersRef.find(p => p.peerID === payload.id);
-            item.peer.signal(payload.signal);
+            item.peer.p.signal(payload.signal);
         });
     }).catch((err) => {
         alert(`${err.message} - couldn't connect to your microphone. Make sure you have allowed the game to use your microphone on your browser!`)
@@ -112,14 +114,16 @@ let joinAudioRoom = (userAudio) => {
 
 let loadParticipants = (userPeers) => {
     for(let i = 0; i < userPeers.length; i++){        
-        let audioElem = createUserAudio(userPeers[i].uid)
+        let audioElem = createUserAudio(userPeers[i].id)
         addParticipant(userPeers[i].peer, audioElem)
     }
 }
 
 
-let addParticipant = (peer, audioElem) => {        
-    peer.on("stream", stream => {
+let addParticipant = (peer, audioElem) => {  
+    console.log("added peer ", peer)
+    peer.p.on("stream", stream => {
+        console.log("on stream", stream)
         audioElem.srcObject = stream;
     })
 
@@ -127,31 +131,38 @@ let addParticipant = (peer, audioElem) => {
 }
 
 let createPeer = (userToSignal, callerID, stream) => {
-    const peer = new SimplePeer({
-        initiator: true,
-        trickle: false,
-        stream,
-    });
+    const peer = {
+        id: callerID,
+        p: new SimplePeer({
+            initiator: true,
+            trickle: true,
+            stream,
+        })
+    }
 
-    peer.on("signal", signal => {
+    peer.p.on("signal", signal => {
         socket.emit("sendSig", { userToSignal, callerID, signal })
     })
+
 
     return peer;
 }
 
 let addPeer = (incomingSignal, callerID, stream) => {
-    const peer = new SimplePeer({
-        initiator: false,
-        trickle: false,
-        stream,
-    })
+    const peer = {
+        id: callerID,
+        p: new SimplePeer({
+            initiator: false,
+            trickle: true,
+            stream,
+        })
+    }
 
-    peer.on("signal", signal => {
+    peer.p.on("signal", signal => {
         socket.emit("returnSig", { signal, callerID })
     })
 
-    peer.signal(incomingSignal);
+    peer.p.signal(incomingSignal);
 
     return peer;
 }
@@ -175,13 +186,13 @@ userMute.addEventListener("click", (e) => {
 socket.on("updateParticipantMute", (data) => {
     let { uid, status } = data;
 
-    let userAudio = document.querySelector(`.calls .users #u${uid}-audio`)
-    let audioElem = document.querySelector(`.calls .audios #${uid}-audio`)
+    let userAudio = document.getElementById(`u${uid}-audio`)
+    let audioElem = document.getElementById(`${uid}-audio`)
 
     if(userAudio && status){
         userAudio.classList.add("muted")
         
-        if(audioElem){
+        if(audioElem && uid !== current.user.id){
             audioElem.muted = true;
         }
 
@@ -191,10 +202,37 @@ socket.on("updateParticipantMute", (data) => {
     if(userAudio && !status){
         userAudio.classList.remove("muted")
         
-        if(audioElem){
+        if(audioElem && uid !== current.user.id){
             audioElem.muted = false;
         }
 
         return;
     } 
+})
+
+socket.on("participantLeft", uid => {
+    let userAudio = document.getElementById(`u${uid}-audio`)
+    let audioElem = document.getElementById(`${uid}-audio`)
+
+    if(userAudio){
+        userAudio.remove()
+    }
+
+    if(audioElem){
+        audioElem.remove()
+    }
+
+    
+    // let findUserOnRef = peersRef.findIndex(peer => peer.peerID === uid)
+    // if(findUserOnRef !== -1){
+    //     peersRef[findUserOnRef].peer.p.destroy()
+    //     peersRef.splice(findUserOnRef, 1)
+    // }
+    
+    // let findUserOnPeers = userPeers.findIndex(peer => peer.id === uid)
+    
+    // if(findUserOnPeers !== -1){
+    //     userPeers.splice(findUserOnPeers, 1)
+    // }
+
 })

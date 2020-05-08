@@ -192,8 +192,7 @@ io.on('connection', (socket) => {
   socket.on("leaveAudio", () => {
     userSetAudio(rid, uid, false)
 
-    io.to(rid).emit("loadExistingAudios", getRoomUsers(rid)) 
-    io.to(rid).emit("roomUsers", getRoomUsers(rid)) 
+    socket.broadcast.to(rid).emit("participantLeft", uid) 
   })
 
   socket.on("setMute", (status) => {
@@ -248,8 +247,6 @@ io.on('connection', (socket) => {
             dy,
             bg: room.bg
           }
-
-
 
           io.to(rid).emit("collided", collision)
         }
