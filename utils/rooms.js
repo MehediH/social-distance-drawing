@@ -45,6 +45,8 @@ function updateRoomCanvas(rid, data) {
 function updateUserPos(data, room){
   let user = room.users.find(user => user.id === data.user.id);
 
+  if(!user) return;
+
   user.x = data.user.x
   user.y = data.user.y
   user.pX = data.user.pX
@@ -119,6 +121,7 @@ function updateCanvasBG(rid, color){
 
   if(!room){return;}
 
+  room.canvas = []
   room.bg = color
 }
 

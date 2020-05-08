@@ -222,7 +222,7 @@ socket.on("updateParticipantMute", (data) => {
     if(userAudio && !status){
         userAudio.classList.remove("muted")
         
-        if(audioElem && uid !== current.user.id && isSilenced === "false"){
+        if(audioElem && uid !== current.user.id && isSilenced.getAttribute("muted") === "false"){
             audioElem.muted = false;
         }
 
