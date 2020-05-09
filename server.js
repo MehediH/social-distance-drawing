@@ -190,14 +190,14 @@ io.on('connection', (socket) => {
   })
 
   socket.on("leaveAudio", () => {
-    userSetAudio(rid, uid, false)
+    let usersStillInRoom = userSetAudio(rid, uid, false)
 
-    socket.broadcast.to(rid).emit("participantLeft", uid) 
+    socket.broadcast.to(rid).emit("participantLeft", {uid, usersStillInRoom}) 
   })
 
   socket.on("setMute", (status) => {
     userSetMute(rid, uid, status)
-
+    
     io.to(rid).emit("updateParticipantMute", {uid, status})  
   })
 

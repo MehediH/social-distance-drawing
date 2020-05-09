@@ -207,7 +207,7 @@ html, body {
   background-color: red;
   border-radius: 50px 50px 50px 0px;
   position: absolute;
-  z-index: 99999; 
+  z-index: 5; 
   pointer-events: none;
   cursor: none;
 
@@ -229,6 +229,7 @@ html, body {
   right: 0;
   bottom: 0;
   top: 0;
+  overflow: hidden;
   cursor: none;
 }
 
@@ -355,6 +356,11 @@ html, body {
       line-height: 50px;
       padding-right: 20px;
       border-radius: 0px 50px 50px 0px;
+
+      p{
+        display: inline-block;
+        margin: 0px;
+      }
     }
 
     svg{
@@ -826,10 +832,18 @@ html, body {
 
 .color.black { background-color: black; }
 .color.red { background-color: red; }
-.color.green { background-color: green; }
+.color.green { background-color: green; } 
 .color.blue { background-color: blue; }
 .color.yellow { background-color: yellow; }
-  
+
+@media(max-width: 1280px){
+
+  .brush{
+    width: 100px !important;
+ 
+  }
+}
+
 .brush{
 	width: 200px;
 	max-width: 100%;

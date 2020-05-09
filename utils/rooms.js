@@ -201,6 +201,8 @@ function setGameMode(rid, mode){
 
   if(!room){return;}
 
+  room.game.round = 0;
+  room.game.currentlyDrawing = "";
   room.game.justDraw = mode;
 }
 
@@ -230,7 +232,7 @@ function userSetAudio(rid, uid, status){
 
   user.inAudio = status;
 
-  return user.inAudio;
+  return room.users.filter(u => u.inAudio).length;
 }
 
 function userSetMute(rid, uid, muteStatus){

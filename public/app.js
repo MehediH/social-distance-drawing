@@ -31,7 +31,8 @@ let settingsIcon = document.querySelector(".settings")
 let justDrawBtn = document.querySelector(".just-draw")
 let chatAutoClose;
 let brushSize = 10;
-
+let userJoined = false; // audio
+let usersInCall = document.querySelector(".calls .btn-label p");
 
 brushSizeControl.value = brushSize;
 
@@ -129,7 +130,7 @@ socket.on('roomUsers', (users) => {
 
   // set audio room list
   users = users.filter(user => user.inAudio)
-
+  usersInCall.innerText = `(${users.length})`
   if(users.length === 0){
     document.querySelector(".calls .warn").innerText = `Looks like you are the only one here! You can join the room now, and others can join you whenever they want.`;
     document.querySelector(".calls .block-title").style.display = "none";
@@ -210,11 +211,11 @@ function startListening(user){
   canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
 
 
-  // //Touch support for mobile devices
-  // canvas.addEventListener('touchstart', onMouseDown, false);
-  // canvas.addEventListener('touchend', onMouseUp, false);
-  // canvas.addEventListener('touchcancel', onMouseUp, false);
-  // canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
+  //Touch support for mobile devices
+  canvas.addEventListener('touchstart', onMouseDown, false);
+  canvas.addEventListener('touchend', onMouseUp, false);
+  canvas.addEventListener('touchcancel', onMouseUp, false);
+  canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
 
   // for (var i = 0; i < colors.length; i++){
   //   colors[i].addEventListener('click', onColorUpdate, false);
@@ -294,8 +295,8 @@ function drawLine(x0, y0, x1, y1, color, emit, u, strokeWidth){
 
 function onMouseDown(e){
   drawing = true;
-  current.x = e.clientX||e.touches[0].clientX;
-  current.y = e.clientY||e.touches[0].clientY;
+  current.x = e.clientX||e.changedTouches[0].clientX;
+  current.y = e.clientY||e.changedTouches[0].clientY;
 }
 
 function onMouseUp(e){
@@ -308,38 +309,50 @@ function onMouseUp(e){
   current.user.pX = e.clientX
   current.user.pY = e.clientY
 
-  drawLine(current.x, current.y, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, current.color, true, current.user, brushSize);
+  let clientX = e.clientX;
+  let clientY = e.clientY;
+
+  if(e.touches){
+    clientX = e.changedTouches[0].clientX
+    clientY = e.changedTouches[0].clientY
+  }
+
+  drawLine(current.x, current.y, clientX, clientY, current.color, true, current.user, brushSize);
 }
 
 function onMouseMove(e){
   let pos = getMousePosition(e.clientX, e.clientY)
-  user.style.left = pos[0] + "%"
-  user.style.top = pos[1] + "%"
+  let touchPos;
+
+  if(e.touches) touchPos = getMousePosition(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+  
+  user.style.left = (pos[0] || touchPos[0]) + "%"
+  user.style.top = (pos[1] || touchPos[1]) + "%"
+
+  current.user.x = pos[0] || touchPos[0]
+  current.user.y = pos[1] || touchPos[1]
+  current.user.pX = e.clientX || e.changedTouches[0].clientX;
+  current.user.pY = e.clientY|| e.changedTouches[0].clientY;
 
   if (!drawing) { 
-
-    current.user.x = pos[0]
-    current.user.y = pos[1]
-    current.user.pX = e.clientX
-    current.user.pY = e.clientY
-
     socket.emit('userMoving', {
       user: current.user
     });
 
-
     return;
   }
 
+  let clientX = e.clientX;
+  let clientY = e.clientY;
 
-  current.user.x = pos[0]
-  current.user.y = pos[1]
-  current.user.pX = e.clientX
-  current.user.pY = e.clientY
+  if(e.touches){
+    clientX = e.changedTouches[0].clientX
+    clientY = e.changedTouches[0].clientY
+  }
   
-  drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true, current.user, brushSize);
-  current.x = e.clientX||e.touches[0].clientX;
-  current.y = e.clientY||e.touches[0].clientY;
+  drawLine(current.x, current.y, clientX, clientY, current.color, true, current.user, brushSize);
+  current.x = e.clientX||e.changedTouches[0].clientX;
+  current.y = e.clientY||e.changedTouches[0].clientY;
 }
 
 
@@ -679,6 +692,11 @@ let closeByClick;
 function firstRun(game){
   let justDrawing = game.justDraw;
 
+  if(autoJoin && !justDrawing){
+    socket.emit("joinGame")
+    return;
+  }
+
   if(!justDrawing){ 
     if(!name){
       if(!firstRnContent.querySelector(".updateName") && firstRnPhase === 1){
@@ -860,14 +878,14 @@ function nextRound(currentRound){
   document.querySelector(".modal__overlay").classList.add("side")
 
   
-    document.querySelector(".modal__footer").innerHTML = "<p>Waiting for other players to vote. You can keep drawing in the meantime :)</p>"
+  document.querySelector(".modal__footer").innerHTML = "<p>Waiting for other players to vote. You can keep drawing in the meantime :)</p>"
 
 
-    firstRnHeader.innerText = "Choose a winner for round " + currentRound;
-    showRanks(true, currentRound)
+  firstRnHeader.innerText = "Choose a winner for round " + currentRound;
+  showRanks(true, currentRound)
 
 
-  startTimer(5, document.querySelector(".timer span t"))
+  startTimer(10, document.querySelector(".timer span t"))
   document.querySelector(".timer span em").innerText = `(waiting)`
   document.querySelector(".timer i").innerText = "draw anything"
 
@@ -945,12 +963,22 @@ justDrawBtn.addEventListener("click", () => {
   justDraw();
 })
 
-document.querySelector(".play-game").addEventListener("click", () => {
+document.querySelector(".play-game").addEventListener("click", () => { 
+  if(!confirm("Are you sure you want to start a new game? This will refresh the page.")){
+    return;
+  }
+
   socket.emit("justDraw", false);
   socket.emit("reloadGame")
 })
 
-socket.on("reloadGame", () => location.reload())
+socket.on("reloadGame", () => {
+  if(window.location.href.indexOf("name=") === -1){
+      window.location.href += `&name=${current.user.userName}${autoJoin ? "" : "&autoJoin=true"}`
+  } else{
+      window.location.href += `${autoJoin ? "" : "&autoJoin=true"}`
+  }
+})
 
 socket.on("gameFinish", () => {
   firstRnHeader.innerText = "Winner winner chicken dinner";

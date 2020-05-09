@@ -1,5 +1,4 @@
 // deals with calls
-let userJoined = false;
 let isUserMuted = false;
 let userPeers = []
 let peersRef = []
@@ -39,21 +38,7 @@ joinBtn.addEventListener("click", () => {
         joinAudioRoom(userAudio);
        
     } else{
-        document.querySelector(".calls .mute-call").style.display = "none"
-
-        userJoined = -1;
-        joinBtn.innerText = "Join Room"
-
-        document.querySelector(".calls .info").innerText = `Using microphone: ${localStream.getTracks()[0].label} - click the button below to join!`
-
-        activeAudios.innerHTML = "";
-
-        localStream.getTracks()[0].stop();
-
-        let userInRoom = document.getElementById(`u${current.user.id}-audio`);
-        if(userInRoom) userInRoom.remove()
-
-        socket.emit("leaveAudio")
+        leaveAudioRoom();
     }
 })
 
@@ -104,6 +89,36 @@ let joinAudioRoom = (userAudio) => {
     }).catch((err) => {
         alert(`${err.message} - couldn't connect to your microphone. Make sure you have allowed the game to use your microphone on your browser!`)
     })
+}
+
+let leaveAudioRoom = () => {
+    document.querySelector(".calls .mute-call").style.display = "none" // hide mute
+
+    userJoined = -1; // set initial join, so we refresh on the next join 
+    joinBtn.innerText = "Join Room"
+
+    // show which microphone is being used
+    document.querySelector(".calls .info").innerText = `Using microphone: ${localStream.getTracks()[0].label} - click the button below to join!`
+
+    activeAudios.innerHTML = ""; // remove all active audios from other paticipants
+
+    localStream.getTracks()[0].stop(); // stop mic
+
+    let userInRoom = document.getElementById(`u${current.user.id}-audio`); // remove the user
+    if(userInRoom) userInRoom.remove()
+
+    // check if room is empty, if it is, we show the usualw arning
+    if(document.querySelector(".calls .audios").children.length === 0){
+        document.querySelector(".calls .warn").innerText = `Looks like you are the only one here! You can join the room now, and others can join you whenever they want.`;
+        document.querySelector(".calls .block-title").style.display = "none";
+        document.querySelector(".calls .warn").style.display = "block";
+        document.querySelector(".calls .users").innerHTML = "";
+    }
+
+    let numOfUsersInCall = document.querySelector(".calls p").innerText.match(/\d/g)[0];
+    usersInCall.innerText = `(${numOfUsersInCall - 1})`
+
+    socket.emit("leaveAudio") // let everyone know
 }
 
 socket.on("userJoinedAudio", payload => {
@@ -230,7 +245,9 @@ socket.on("updateParticipantMute", (data) => {
     } 
 })
 
-socket.on("participantLeft", uid => {
+socket.on("participantLeft", data => {
+    let {usersStillInRoom, uid} = data;
+
     let userAudio = document.getElementById(`u${uid}-audio`)
     let audioElem = document.getElementById(`${uid}-audio`)
 
@@ -254,6 +271,7 @@ socket.on("participantLeft", uid => {
         userPeers.splice(findUserOnPeers, 1)
     }
 
+    usersInCall.innerText = ` (${usersStillInRoom})`
 })
 
 if(autoJoin){
