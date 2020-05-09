@@ -383,7 +383,7 @@ html, body {
     color: #fff;
 
     span, div{
-      background-color: #333333;
+      background-color: #333333 !important;
     }
 
     .feather-lock{
@@ -489,23 +489,25 @@ html, body {
         border-radius: 0px;
         
         input{
-          height: 50px;
-          border: 0px;
-          padding: 0 15px;
+          height: 50px !important;
+          border: 0px !important;
+          padding: 0 15px !important;
           margin: 0px;
-          font-size: 15px;
+          font-size: 15px !important;
           outline: 0;
-          border-radius: 0px;
+          border-radius: 0px !important;
+          margin-bottom: 10px;
         }
 
         .chat-send{
           width: 65px;
           cursor: pointer;
+          background-color: #8bf1de;
+          border-radius: 0px;
+          transition: 0.3s all ease-in-out;
 
           &:hover{
-            svg{
-              stroke: blue;
-            }
+            background-color: #19dcb8;
           }
         }
     
@@ -676,7 +678,7 @@ html, body {
 }
 
 .player-count.open{
-  div.icn, span{
+  div.icn, span.btn-label{
     background-color: black !important;
     color: #fff;
   }
@@ -1264,7 +1266,7 @@ button.btn-d, a.btn-d{
 }
 
 @media (max-width: 1275px){
-  .btn.lock, .btn.just-draw, .btn.clear {
+  .btn.lock, .btn.just-draw, .btn.clear, .btn.calls {
     span{
       display: none !important;
     }

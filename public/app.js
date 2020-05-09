@@ -536,7 +536,7 @@ const canvasPickr = Pickr.create({
           cancel: true,
           save: true
       }
-  },
+  }, 
   strings: {
     save: "Set canvas background",
     cancel: "Nevermind"
