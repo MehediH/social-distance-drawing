@@ -34,6 +34,10 @@ let brushSize = 10;
 let userJoined = false; // audio
 let usersInCall = document.querySelector(".calls .btn-label p");
 
+// game settings
+const roundDuration = 60;
+const waitTime = 10;
+
 brushSizeControl.value = brushSize;
 
 feather.replace() // load icons
@@ -843,7 +847,7 @@ socket.on("skipRoundWait", () => {
 function startGame(game){
   
   let timer = Math.abs(Date.now()-game.timer) / 1000;
-  startTimer(60-timer, document.querySelector(".timer span t"), game.round)
+  startTimer(roundDuration-timer, document.querySelector(".timer span t"), game.round)
   document.querySelector(".timer span em").innerText = `(round ${game.round})`
   document.querySelector(".timer i").innerText = `draw ${game.currentlyDrawing}`
 
@@ -885,7 +889,7 @@ function nextRound(currentRound){
   showRanks(true, currentRound)
 
 
-  startTimer(10, document.querySelector(".timer span t"))
+  startTimer(waitTime, document.querySelector(".timer span t"))
   document.querySelector(".timer span em").innerText = `(waiting)`
   document.querySelector(".timer i").innerText = "draw anything"
 
