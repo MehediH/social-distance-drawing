@@ -35,8 +35,9 @@ let userJoined = false; // audio
 let usersInCall = document.querySelector(".calls .btn-label p");
 
 // game settings
-const roundDuration = 60;
-const waitTime = 10;
+const roundDuration = 10;
+const waitTime = 5;
+const minUsersNeededForVoting = 3;
 
 brushSizeControl.value = brushSize;
 
@@ -335,8 +336,17 @@ function onMouseMove(e){
 
   current.user.x = pos[0] || touchPos[0]
   current.user.y = pos[1] || touchPos[1]
-  current.user.pX = e.clientX || e.changedTouches[0].clientX;
-  current.user.pY = e.clientY|| e.changedTouches[0].clientY;
+
+  let clientX = e.clientX;
+  let clientY = e.clientY;
+
+  if(e.touches){
+    clientX = e.changedTouches[0].clientX
+    clientY = e.changedTouches[0].clientY
+  }
+
+  current.user.pX = clientX;
+  current.user.pY = clientY;
 
   if (!drawing) { 
     socket.emit('userMoving', {
@@ -346,17 +356,11 @@ function onMouseMove(e){
     return;
   }
 
-  let clientX = e.clientX;
-  let clientY = e.clientY;
-
-  if(e.touches){
-    clientX = e.changedTouches[0].clientX
-    clientY = e.changedTouches[0].clientY
-  }
+  
   
   drawLine(current.x, current.y, clientX, clientY, current.color, true, current.user, brushSize);
-  current.x = e.clientX||e.changedTouches[0].clientX;
-  current.y = e.clientY||e.changedTouches[0].clientY;
+  current.x = clientX;
+  current.y = clientY;
 }
 
 
@@ -435,6 +439,8 @@ clear.addEventListener("click", () => {
 socket.on("clearCanvas", (data) => {
   let {room, user} = data;
   updateCanvasColor(room.bg)
+  showMessage(`<li class="status"><p>${user.userName} cleared the canvas!</p></li>`, false)
+
 })
 
 lock.addEventListener("click", () => {
@@ -452,9 +458,11 @@ socket.on("lockRoom", (data) => {
   if(status){
     lock.classList.add("locked")
     lock.querySelector("span").innerText = "Unlock room"
+    showMessage(`<li class="status"><p>${user.userName} locked the room!</p></li>`, false)
   } else{
     lock.classList.remove("locked")
     lock.querySelector("span").innerText = "Lock room"
+    showMessage(`<li class="status"><p>${user.userName} unlocked the room!</p></li>`, false)
   }
 })
 
@@ -815,11 +823,7 @@ function startTimer(duration, display, currentRound) {
 
       if (--timer < 0) { // timer done
         if(currentRound){
-          if(currentRound === 6){
-            // TODO: FIX ROUND 5 VOTING
-          } else{
-            nextRound(currentRound)
-          }
+          nextRound(currentRound)
         } else{
           MicroModal.close()
           socket.emit("nextRound");
@@ -835,6 +839,8 @@ function startTimer(duration, display, currentRound) {
 }
 
 socket.on("joinGame", (game) => {
+  if(game.round === 6) return;
+  console.log("hola" + game.round)
   startGame(game)
 })
 
@@ -868,7 +874,7 @@ function nextRound(currentRound){
   let userCount = document.querySelector(".player-count span").innerText;
   
   // if its just one user, we dont vote and go next round
-  if(parseInt(userCount) == 1){
+  if(parseInt(userCount) == minUsersNeededForVoting){
     if(currentRound >= 5){
       socket.emit("joinGame", true);
     } else{
@@ -978,9 +984,9 @@ document.querySelector(".play-game").addEventListener("click", () => {
 
 socket.on("reloadGame", () => {
   if(window.location.href.indexOf("name=") === -1){
-      window.location.href += `&name=${current.user.userName}${autoJoin ? "" : "&autoJoin=true"}`
+      window.location.href += `&name=${current.user.userName}${autoJoin  ? "" : (userJoined ? "&autoJoin=true" : "")}`
   } else{
-      window.location.href += `${autoJoin ? "" : "&autoJoin=true"}`
+      window.location.href += `${autoJoin  ? "" : (userJoined ? "&autoJoin=true" : "")}`
   }
 })
 

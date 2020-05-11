@@ -52,7 +52,7 @@ let joinAudioRoom = (userAudio) => {
         document.querySelector(".calls .info").innerText = `Using microphone: ${stream.getTracks()[0].label}`
 
         localStream = stream;
-        joinBtn.innerText = "Leave Room";
+        joinBtn.innerText = "Leave Call";
 
         document.querySelector(".calls .mute-call").style.display = "block"
 
@@ -95,7 +95,7 @@ let leaveAudioRoom = () => {
     document.querySelector(".calls .mute-call").style.display = "none" // hide mute
 
     userJoined = -1; // set initial join, so we refresh on the next join 
-    joinBtn.innerText = "Join Room"
+    joinBtn.innerText = "Join Call"
 
     // show which microphone is being used
     document.querySelector(".calls .info").innerText = `Using microphone: ${localStream.getTracks()[0].label} - click the button below to join!`
@@ -109,7 +109,7 @@ let leaveAudioRoom = () => {
 
     // check if room is empty, if it is, we show the usualw arning
     if(document.querySelector(".calls .audios").children.length === 0){
-        document.querySelector(".calls .warn").innerText = `Looks like you are the only one here! You can join the room now, and others can join you whenever they want.`;
+        document.querySelector(".calls .warn").innerText = `Looks like you are the only one here! You can join the call now, and others can join you whenever they want.`;
         document.querySelector(".calls .block-title").style.display = "none";
         document.querySelector(".calls .warn").style.display = "block";
         document.querySelector(".calls .users").innerHTML = "";

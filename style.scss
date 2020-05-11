@@ -87,6 +87,8 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.88);
+  padding: 0 20px;
 
   h1{
     font-size: 50px;
@@ -333,7 +335,8 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
+    // box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 1px 6px 15px rgba(0, 0, 0, 0.14); 
     border-radius: 50px;
     color: #333;
     font-size: 15px;
@@ -374,7 +377,10 @@ html, body {
     }
 
     &:hover{
-      opacity: 0.75;
+      svg.feather{
+        opacity: 0.65;
+      }
+      
     }
   }
 
@@ -1273,11 +1279,31 @@ button.btn-d, a.btn-d{
   }
 }
 
-@media (max-width: 1275px){
-  .btn.lock, .btn.just-draw, .btn.clear, .btn.calls {
-    span{
+@media (max-width: 1385px){
+  .buttons div.btn{
+    margin-left: 10px !important;
+    
+  }
+
+  .btn.res {
+    span.btn-label{
       display: none !important;
+      position: absolute;
+      margin-top: 55px;
+      background-color: #e9eaed;
+      border-radius: 50px;
+      padding: 5px 20px;
+      height: auto;
+      line-height: 20px;
     }
+
+    &:hover{
+
+      span.btn-label{
+        display: block !important;
+      }
+    }
+
     div{
       border-radius: 50px !important;
     }
@@ -1322,7 +1348,8 @@ button.btn-d, a.btn-d{
     width: 500px;
     top: 0;
     transform: translateX(-50%);
-    padding: 50px 0;
+    background-color: rgba(255, 255, 255, 0.88);
+    padding: 50px 25px;
   }
   
   .open-rooms{
