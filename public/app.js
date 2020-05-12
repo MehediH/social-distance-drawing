@@ -35,8 +35,8 @@ let userJoined = false; // audio
 let usersInCall = document.querySelector(".calls .btn-label p");
 
 // game settings
-const roundDuration = 10;
-const waitTime = 5;
+const roundDuration = 60;
+const waitTime = 10;
 const minUsersNeededForVoting = 3;
 
 brushSizeControl.value = brushSize;
@@ -768,9 +768,17 @@ socket.on("updatedUserName", updateDetails => {
   showMessage(`<li class="status"><p>${oldName} changed their name to ${user.userName}</p></li>`, false)
 
   let firstRnPlayers = document.querySelector(".firstRunPlayersList")
+
   if(firstRnPlayers){
     firstRnPlayers.innerHTML += `<li>${oldName} changed their name to ${user.userName}</li>`
   }
+
+  let callsUser = document.querySelector(`.calls .users #u${user.id}-audio .usr`)
+  if(callsUser){
+    let t = document.querySelector(`.calls .users #u${user.id}-audio .usr .mic`)
+    callsUser.innerHTML = t.outerHTML + user.userName + `${current.user.id === user.id ? " (you)" : ""}`
+  }
+  
 })
 
 // user wnats to continue
@@ -874,7 +882,7 @@ function nextRound(currentRound){
   let userCount = document.querySelector(".player-count span").innerText;
   
   // if its just one user, we dont vote and go next round
-  if(parseInt(userCount) == minUsersNeededForVoting){
+  if(parseInt(userCount) <= minUsersNeededForVoting){
     if(currentRound >= 5){
       socket.emit("joinGame", true);
     } else{
