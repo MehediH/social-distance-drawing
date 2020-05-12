@@ -1,32 +1,6 @@
-;(function(process){  require.m = { 0:[function(require,module,exports){ window.playAlert = require('./');
- },{"./":1}],1:[function(require,module,exports){ var play    = require('play-audio'),
-    content = require('./content'),
-    playing = play().autoplay();
-
-module.exports = playAlert;
-module.exports.content = content;
-module.exports.volume = playing.volume;
-module.exports.player = playing;
-
-function playAlert(name){
-  name || ( name = 'bottle' );
-
-  if (!content[name]) return;
-
-  playing.src(content[name]);
-}
- },{"./content":2,"play-audio":3}],2:[function(require,module,exports){ module.exports = {
-  bottle: ['http://i.cloudup.com/y29czRwU3R.m4a', 'http://i.cloudup.com/baNnhH1I7M.ogg'],
-  funk: ['http://i.cloudup.com/KkfWRzYC77.m4a', 'http://i.cloudup.com/7SSbOm5XZS.ogg'],
-  glass: ['http://i.cloudup.com/E021I9zUG3.m4a', 'http://i.cloudup.com/3gveeCqUD6.ogg'],
-  morse: ['http://i.cloudup.com/h7r7MsF4q3.m4a', 'http://i.cloudup.com/b0EXCVaceT.ogg'],
-  pop: ['http://i.cloudup.com/vTka9yOizT.m4a', 'http://i.cloudup.com/4TnDj0v9GE.ogg'],
-  purr: ['http://i.cloudup.com/5HJSHCtOzZ.m4a', 'http://i.cloudup.com/YdDNGA0sj5.ogg'],
-  submarine: ['http://i.cloudup.com/r4ZENSF0Hu.m4a', 'http://i.cloudup.com/2OPb5OYAI2.ogg'],
-  tink: ['http://i.cloudup.com/nCtoNq3kJN.m4a', 'http://i.cloudup.com/SNi1RX8iwb.ogg']
-};
- },{}],3:[function(require,module,exports){ module.exports = require('./lib/player');
- },{"./lib/player":4}],4:[function(require,module,exports){ var newChain  = require('new-chain'),
+;(function(process){  require.m = { 0:[function(require,module,exports){ window.playAudio = require('./');
+ },{"./":1}],1:[function(require,module,exports){ module.exports = require('./lib/player');
+ },{"./lib/player":2}],2:[function(require,module,exports){ var newChain  = require('new-chain'),
     src = require('./src'),
     render = require('./render');
 
@@ -101,7 +75,7 @@ function play(urls, dom){
   }
 
 }
- },{"./src":5,"./render":7,"new-chain":10}],5:[function(require,module,exports){ var mimeOf = require("./mime");
+ },{"./src":3,"./render":5,"new-chain":8}],3:[function(require,module,exports){ var mimeOf = require("./mime");
 
 module.exports = {
   attr: attr,
@@ -132,7 +106,7 @@ function pick(el, urls){
     return !!el.canPlayType(mimeOf(url));
   })[0];
 }
- },{"./mime":6}],7:[function(require,module,exports){ var domify = require('domify'),
+ },{"./mime":4}],5:[function(require,module,exports){ var domify = require('domify'),
     templates = require("./templates");
 
 module.exports = render;
@@ -140,7 +114,7 @@ module.exports = render;
 function render(src){
   return domify(templates['audio.html']);
 }
- },{"./templates":8,"domify":9}],8:[function(require,module,exports){ exports["audio.html"] = "<audio preload=\"auto\" /></audio>" },{}],6:[function(require,module,exports){ var table = {
+ },{"./templates":6,"domify":7}],6:[function(require,module,exports){ exports["audio.html"] = "<audio preload=\"auto\" /></audio>" },{}],4:[function(require,module,exports){ var table = {
   aif  : "audio/x-aiff",
   aiff : "audio/x-aiff",
   wav  : "audio/x-wav",
@@ -157,7 +131,7 @@ module.exports = mimeOf;
 function mimeOf(url){
   return table[ url.split('.').slice(-1)[0] ];
 }
- },{}],10:[function(require,module,exports){ module.exports = newChain;
+ },{}],8:[function(require,module,exports){ module.exports = newChain;
 module.exports.from = from;
 
 function from(chain){
@@ -212,7 +186,7 @@ function methods(){
 function newChain(){
   return from({}).apply(undefined, arguments);
 }
- },{}],9:[function(require,module,exports){ 
+ },{}],7:[function(require,module,exports){ 
 /**
  * Expose `parse`.
  */

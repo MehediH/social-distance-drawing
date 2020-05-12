@@ -117,8 +117,8 @@ socket.on("newId", (data) => {
     drawLine(d.x0*w, d.y0*h, d.x1*w, d.y1*h, d.color, false, null, d.strokeWidth)
   }
 
-  firstRun({...room.game, justDraw: true})
-  // firstRun(room.game)
+  // firstRun({...room.game, justDraw: true})
+  firstRun(room.game)
 })
 
 
@@ -164,6 +164,11 @@ socket.on("newUser", (user) => {
     document.body.appendChild(newPlayer)
   }
 
+
+  if(document.querySelector(".buttons .player-count .btn-label").innerText !== "0"){
+    playAudio(['sounds/notif.mp3']).play().volume(0.3)
+  }
+
   showMessage(`<li class="status"><p>${user.userName} joined the room</p></li>`, false)
 
   if(firstRunOpen && firstRnPhase === 2){
@@ -181,7 +186,7 @@ socket.on("collided", (collision) => {
 
   showMessage(`<li class="status collision"><p>${collision.p1.userName} & ${collision.p2.userName} broke social distance!</p></li>`, false)
 
-  playAlert('submarine')
+  playAudio(['sounds/oop.mp3']).play()
 
   setTimeout(() => {
     document.body.classList.remove("collided")
@@ -680,9 +685,9 @@ socket.on("rcvMessage", (message) => {
     return;
   }
 
-  // if(message.uid !== current.user.id){
-  //   playAlert('morse')
-  // }
+  if(!playerCount.classList.contains("open")){
+    playAudio(['sounds/notif.mp3']).play().volume(0.3)
+  }
 
   showMessage(`<li class="${message.uid === current.user.id ? "own": ""}"><p class="msg" style="border-bottom: 5px solid ${message.accent}"><em>${message.userName}</em><span>${message.text}</span></p></li>`)
 })
@@ -816,7 +821,7 @@ firstRnStartBtn.addEventListener("click", () => {
 })
 
 let gameStop;
-
+let soundPlayed = false;
 function startTimer(duration, display, currentRound) {
   if(gameStop){return;}
   let timer = duration, minutes, seconds;
@@ -829,7 +834,15 @@ function startTimer(duration, display, currentRound) {
 
       display.textContent = minutes + ":" + seconds;
 
+      if(timer < 16 && !soundPlayed){
+        playAudio(['sounds/tick.mp3']).play().volume(userJoined ? 0.1 : 0.3)
+        document.querySelector(".buttons .timer").classList.add("yellow")
+        soundPlayed = true;
+      }
+
       if (--timer < 0) { // timer done
+        soundPlayed = false;
+        document.querySelector(".buttons .timer").classList.remove("yellow")
         if(currentRound){
           nextRound(currentRound)
         } else{
@@ -859,6 +872,7 @@ socket.on("skipRoundWait", () => {
 // game
 function startGame(game){
   
+
   let timer = Math.abs(Date.now()-game.timer) / 1000;
   startTimer(roundDuration-timer, document.querySelector(".timer span t"), game.round)
   document.querySelector(".timer span em").innerText = `(round ${game.round})`
@@ -877,7 +891,6 @@ function startGame(game){
 }
 
 function nextRound(currentRound){
-
   let userCount = document.querySelector(".player-count span").innerText;
   
   // if its just one user, we dont vote and go next round

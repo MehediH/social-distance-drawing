@@ -222,6 +222,21 @@ html, body {
  * Canvas
  */
 
+ @keyframes anna {
+   0% {
+     color: #333;
+    background-color: #ffff0e;
+   }
+ 
+   60%{
+     color: #fff; 
+   }
+
+   100%{  
+     color: #fff;
+     background-color: #e41e42;
+   }
+ }
 
 .whiteboard {
   height: 100%;
@@ -293,6 +308,12 @@ html, body {
     }
   }
 
+  .timer.yellow{
+    div, .btn-label{
+      background-color: #ffff0e;
+      animation: anna forwards 15s 0s cubic-bezier(.36,.07,.19,.97);
+    }
+  }
   .timer{
     display: flex;
     transition: 0.3s all ease-in-out;

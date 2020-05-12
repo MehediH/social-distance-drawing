@@ -137,7 +137,7 @@ let leaveAudioRoom = () => {
 socket.on("userJoinedAudio", payload => {
     const item = peersRef.find(p => p.peerID ===  payload.callerID);
     if(item){return;}
-    console.log("NEW")
+    playAudio(['sounds/notif.mp3']).play().volume(0.3)
 
     const peer = addPeer(payload.signal, payload.callerID, localStream);
 
