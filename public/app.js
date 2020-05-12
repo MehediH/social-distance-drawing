@@ -117,8 +117,8 @@ socket.on("newId", (data) => {
     drawLine(d.x0*w, d.y0*h, d.x1*w, d.y1*h, d.color, false, null, d.strokeWidth)
   }
 
-  // firstRun({...room.game, justDraw: true})
-  firstRun(room.game)
+  firstRun({...room.game, justDraw: true})
+  // firstRun(room.game)
 })
 
 
@@ -848,7 +848,6 @@ function startTimer(duration, display, currentRound) {
 
 socket.on("joinGame", (game) => {
   if(game.round === 6) return;
-  console.log("hola" + game.round)
   startGame(game)
 })
 

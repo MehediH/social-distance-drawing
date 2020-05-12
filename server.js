@@ -122,7 +122,7 @@ io.on('connection', (socket) => {
       return;
     }
     
-    io.to(rid).emit('clearCanvas', {room, user: {}})
+    io.to(rid).emit('clearCanvas', {room, user: {userName: "the game"}})
 
     let newRound = nextRound(rid);
     socket.emit("joinGame", newRound)

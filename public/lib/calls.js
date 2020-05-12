@@ -42,15 +42,28 @@ joinBtn.addEventListener("click", () => {
     }
 })
 
+// Listen for changes to media devices and handle accordingly
+let micChange = false;
+navigator.mediaDevices.addEventListener('devicechange', async () => {
+    if(userJoined && !micChange){
+        if(confirm("Looks like your default microphone changed, you'll need to re-join the call to use the new microphone. Would you like to do that now?")){
+            userJoined = -1;
+            micChange = true;
+            joinBtn.click();
+        }
 
-let joinAudioRoom = (userAudio) => {
-    
-    navigator.mediaDevices.getUserMedia({ video: false, audio: true}).then(stream => {
+        return;
+    }
+});
+
+let joinAudioRoom = (userAudio) => {    
+    navigator.mediaDevices.getUserMedia({ video: false, audio: true}).then(async (stream) => {
         userJoined = true; // set user is in call to true
-        userAudio.srcObject = stream;
+        userAudio.srcObject = localStream;
 
         document.querySelector(".calls .info").innerText = `Using microphone: ${stream.getTracks()[0].label}`
-
+        
+        
         localStream = stream;
         joinBtn.innerText = "Leave Call";
 
@@ -65,7 +78,7 @@ let joinAudioRoom = (userAudio) => {
             users = users.map(user => user.id)
 
             users.forEach(user => {
-                const peer = createPeer(user, socket.id, stream);
+                const peer = createPeer(user, socket.id, localStream);
 
                 peersRef.push({
                     peerID: user,

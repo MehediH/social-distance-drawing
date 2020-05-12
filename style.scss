@@ -586,12 +586,14 @@ html, body {
           border-radius: 25px 25px 25px 0;
           padding: 10px 15px;
           box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.22);
-      
+          user-select: text;
+
           em{
             display: block;
             font-size: 13px;
             font-style: normal;
             opacity: 0.75;
+            user-select: none;
           }
       
           span{
@@ -601,8 +603,9 @@ html, body {
             width: 100%;
             height: auto;
             line-height: 15px;
-            font-size: 15px;
+            font-size: 15px; 
             padding-top: 5px;
+            cursor: text;
           }
         }
       }
