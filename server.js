@@ -118,7 +118,7 @@ io.on('connection', (socket) => {
     let timer = Math.abs(Date.now()-game.timer) / 1000
 
     
-    if(timer < 15 && game.round !== 5){
+    if(timer < 60 && game.round !== 5){
       socket.emit("joinGame", game)
       return;
     }

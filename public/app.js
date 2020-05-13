@@ -33,7 +33,7 @@ let userJoined = false; // audio
 let usersInCall = document.querySelector(".calls .btn-label p");
 
 // game settings
-const roundDuration = 15;
+const roundDuration = 60;
 const waitTime = 10;
 const minUsersNeededForVoting = 2;
 
