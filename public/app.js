@@ -33,7 +33,7 @@ let userJoined = false; // audio
 let usersInCall = document.querySelector(".calls .btn-label p");
 
 // game settings
-const roundDuration = 60;
+const roundDuration = 15;
 const waitTime = 10;
 const minUsersNeededForVoting = 2;
 
@@ -914,7 +914,7 @@ function nextRound(currentRound){
   // if its just one user, we dont vote and go next round
   if(parseInt(userCount) <= minUsersNeededForVoting){
     if(currentRound >= 5){
-      socket.emit("joinGame", true);
+      socket.emit("forceFinish");
     } else{
       socket.emit("nextRound");
     }

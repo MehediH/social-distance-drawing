@@ -422,11 +422,32 @@ html, body {
   }
 
   .locked{
-    
     color: #fff;
+
+    &:hover{
+      .feather-lock{
+        display: none;
+      }
+  
+      .feather-unlock{
+        display: block;
+      }
+    }
 
     span, div{
       background-color: #333333 !important;
+
+      &:hover{
+        opacity: 1 !important;
+
+        .feather-lock{
+          display: none;
+        }
+    
+        .feather-unlock{
+          display: block;
+        }
+      }
     }
 
     .feather-lock{

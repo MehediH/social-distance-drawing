@@ -104,7 +104,13 @@ io.on('connection', (socket) => {
       socket.emit("joinGame", game)
     }
   })  
- 
+  
+  socket.on("forceFinish", () => {
+    let room = getRoom(rid);
+    let game = room.game;
+    io.to(rid).emit("gameFinish", game);
+  })
+
   socket.on("nextRound", () => {
     let room = getRoom(rid);
     let game = room.game;
@@ -112,7 +118,7 @@ io.on('connection', (socket) => {
     let timer = Math.abs(Date.now()-game.timer) / 1000
 
     
-    if(timer < 60 && game.round !== 5){
+    if(timer < 15 && game.round !== 5){
       socket.emit("joinGame", game)
       return;
     }
