@@ -118,7 +118,7 @@ io.on('connection', (socket) => {
     }
 
     if(game.round === 5){
-      io.to(rid).emit("gameFinish")
+      io.to(rid).emit("gameFinish", game)
       return;
     }
     

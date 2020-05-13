@@ -5,10 +5,28 @@
   <title>Social Distance Drawing</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;1,600&display=swap" rel="stylesheet">
-
+  <link rel="shortcut icon" type="image/png" href="./assets/favicon.ico"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/> <!-- 'nano' theme -->
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="Social Distance Drawing">
+  <meta name="description" content="Draw with your friends without breaking social distancing rules. ">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://distancedrawing.app/">
+  <meta property="og:title" content="Social Distance Drawing">
+  <meta property="og:description" content="Draw with your friends without breaking social distancing rules. ">
+  <meta property="og:image" content="https://distancedrawing.app/assets/cover.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://distancedrawing.app/">
+  <meta property="twitter:title" content="Social Distance Drawing">
+  <meta property="twitter:description" content="Draw with your friends without breaking social distancing rules. ">
+  <meta property="twitter:image" content="https://distancedrawing.app/assets/cover.png">
 </head>
-<body>
+<body class="game">
   <header class="toolbar">
     <div class="buttons">
       <div class="colors">
@@ -21,16 +39,16 @@
         <div id="h4-container"><div id="h4-subcontainer"><h4>0<span></span></h4></div></div>
 
       </div>
-      <div class="btn fill no-text res" title="Fill canvas"><div><i data-feather="droplet"></i></div><span class="btn-label">Fill</span></div>
-      <div class="btn clear res" title="Clear canvas"><div><i data-feather="trash-2"></i></div><span class="btn-label">Clear</span></div>
-      <div class="btn lock res" title="Lock room"><div><i data-feather="lock"></i><i data-feather="unlock"></i></div><span class="btn-label">Lock room</span></div>
-      <div class="btn timer" title="Timer for this round"><div><i data-feather="clock"></i></div><span class="btn-label"><b><t>00:00</t><em>(waiting)</em></b><i>draw anything</i></span></div>
-      <div class="btn just-draw res" title="Disable game and just draw"><div><i data-feather="pen-tool"></i></div><span class="btn-label">Just draw</span></div>
-      <div class="btn play-game hide res" title="Play game"><div><i data-feather="crosshair"></i></div><span class="btn-label">Play Game</span></div>
+      <div class="btn fill no-text res" title="Fill canvas"><div class="btnic"><i data-feather="droplet"></i></div><span class="btn-label">Fill</span></div>
+      <div class="btn clear res" title="Clear canvas"><div class="btnic"><i data-feather="trash-2"></i></div><span class="btn-label">Clear</span></div>
+      <div class="btn lock res" title="Lock room"><div class="btnic"><i data-feather="lock"></i><i data-feather="unlock"></i></div><span class="btn-label">Lock room</span></div>
+      <div class="btn timer" title="Timer for this round"><div class="btnic"><i data-feather="clock"></i></div><span class="btn-label"><b><t>00:00</t><em>(waiting)</em></b><i>draw anything</i></span></div>
+      <div class="btn just-draw res" title="Disable game and just draw"><div class="btnic"><i data-feather="pen-tool"></i></div><span class="btn-label">Just draw</span></div>
+      <div class="btn play-game hide res" title="Play game"><div class="btnic"><i data-feather="crosshair"></i></div><span class="btn-label">Play Game</span></div>
       
 
       <div class="btn calls has-dropdown res">
-        <div><i data-feather="headphones"></i></div>
+        <div class="btnic"><i data-feather="headphones"></i></div>
         <span class="btn-label">Talk <p></p></span>
 
         <div class="dropdown">
@@ -53,15 +71,18 @@
         </div>
       </div>
 
-      <div class="btn no-text settings" title="Change your name"><div><i data-feather="settings"></i></div></div>
+      <div class="btn no-text settings" title="Change your name"><div class="btnic"><i data-feather="settings"></i></div></div>
       
 
       <div class="btn player-count has-dropdown hide-settings" title="Players in the room">
-        <div class="icn"><i data-feather="message-circle"></i><i data-feather="x-circle"></i></div><span class="btn-label">0</span><em class="unread"></em>
+        <div class="icn btnic"><i data-feather="message-circle"></i><i data-feather="x-circle"></i></div><span class="btn-label">0</span><em class="unread"></em>
         <div class="dropdown">
           <div class="inner">
             <p>Share the link below to invite others!</p>
-            <input type="text" value="" class="shareLink"/>
+            <div class="share">
+              <input type="text" value="" readonly class="shareLink"/>
+              <span class="tweet"><i data-feather="twitter"></i><em>Invite friends from Twitter!</em></span>
+            </div>
             <label class="chat-close"><input type="checkbox" name="chatClose"/>Automatically close chat when drawing</label>
             <ul></ul>
           </div>

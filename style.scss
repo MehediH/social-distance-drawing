@@ -13,7 +13,6 @@ html, body {
   padding: 0;
   font-family: 'Nunito', sans-serif;
 
-  overflow: hidden;  
 }
 
 .collided{
@@ -318,13 +317,25 @@ html, body {
     display: flex;
     transition: 0.3s all ease-in-out;
     cursor: default;
+
+    .btnic{
+      &:hover{
+        svg{
+          opacity: 1 !important;
+        }
+      }
+    }
     
-    span{
+    span.btn-label{
       display: grid !important;
       grid-template-rows: 1fr 1fr;
       line-height: initial !important;
       text-align: left;
       padding: 5px 20px 20px 0px !important;
+
+      &:hover{
+        opacity: 1 !important;
+      }
 
       t{
         padding-right: 5px;
@@ -352,7 +363,7 @@ html, body {
     transition: 0.3s all ease-in-out;
     height: 50px;
     text-align: center;
-    background-color: transparent;
+    background-color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -362,7 +373,7 @@ html, body {
     color: #333;
     font-size: 15px;
 
-    div{
+    div.btnic{
       width: 50px;
       height: 50px;
       display: flex;
@@ -370,7 +381,13 @@ html, body {
       justify-content: center;
       background-color: #fff;
       border-radius: 50px 0px 0px 50px;
-      
+
+      &:hover{
+        svg.feather{
+          opacity: 0.65;
+        }
+        
+      }
     }
 
     span.btn-label{
@@ -380,6 +397,10 @@ html, body {
       line-height: 50px;
       padding-right: 20px;
       border-radius: 0px 50px 50px 0px;
+
+      &:hover{
+        opacity: 0.65;
+      }
 
       p{
         display: inline-block;
@@ -397,12 +418,7 @@ html, body {
       display: none;
     }
 
-    &:hover{
-      svg.feather{
-        opacity: 0.65;
-      }
-      
-    }
+   
   }
 
   .locked{
@@ -523,7 +539,6 @@ html, body {
           font-size: 15px !important;
           outline: 0;
           border-radius: 0px !important;
-          margin-bottom: 10px;
         }
 
         .chat-send{
@@ -532,6 +547,11 @@ html, body {
           background-color: #8bf1de;
           border-radius: 0px;
           transition: 0.3s all ease-in-out;
+          height: 50px;
+          margin-top: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
 
           &:hover{
             background-color: #19dcb8;
@@ -1303,7 +1323,7 @@ button.btn-d, a.btn-d{
   }
 }
 
-@media (max-width: 1385px){
+@media (max-width: 1500px){
   .buttons div.btn{
     margin-left: 10px !important;
     
@@ -1369,7 +1389,7 @@ button.btn-d, a.btn-d{
   
   .open{
     position: relative !important;
-    width: 500px;
+    width: 600px;
     top: 0;
     transform: translateX(-50%);
     background-color: rgba(255, 255, 255, 0.88);
@@ -1440,5 +1460,61 @@ button.btn-d, a.btn-d{
         padding-right: 5px;
       }
     }
+  }
+}
+
+@media (max-width: 1042px){
+  .splash{
+    background-image: none !important;
+  }
+
+  .welcome, .open-splash .open{
+    position: initial;
+    transform: none;
+    width: auto;
+    left: 0;
+    right: 0;
+    padding: 50px;
+
+    h1{
+      font-size: 30px;
+    }
+
+    .intro{
+      max-width: 100%;
+    }
+  }
+  
+}  
+
+.game{
+  overflow: hidden;
+}
+
+.tweet{
+  background-color: #1DA1F2;
+  color: #fff;
+  padding: 3px 20px;
+  display: flex;
+  margin-top: 15px;
+  border-radius: 50px;
+  height: 35px;
+  align-items: center;
+  transition: 0.3s all ease-in-out;
+  cursor: pointer;
+  pointer-events: auto !important;
+  box-shadow: 0px 3px 3px rgba(0,0,0,0.15);
+
+  &:hover{
+    background-color: #1198ea;
+  }
+  
+  em{
+    font-style: normal;
+  }
+
+  svg{
+    width: 15px !important;
+    margin-right: 10px;
   }
 }

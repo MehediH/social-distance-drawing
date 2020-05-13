@@ -37,7 +37,7 @@ let usersInCall = document.querySelector(".calls .btn-label p");
 // game settings
 const roundDuration = 60;
 const waitTime = 10;
-const minUsersNeededForVoting = 3;
+const minUsersNeededForVoting = 2;
 
 brushSizeControl.value = brushSize;
 
@@ -110,7 +110,7 @@ socket.on("newId", (data) => {
 
   // repaint existing canvas
   let c = room.canvas;
-  updateCanvasColor(room.bg);
+  updateCanvasColor(room.bg, false);
   for(let i=0; i < c.length; i++){
     let d = c[i]
     // console.log(d)
@@ -182,7 +182,7 @@ socket.on("newUser", (user) => {
 socket.on("collided", (collision) => {
   document.body.classList.add("collided")
 
-  updateCanvasColor(collision.bg);
+  updateCanvasColor(collision.bg, false);
 
   showMessage(`<li class="status collision"><p>${collision.p1.userName} & ${collision.p2.userName} broke social distance!</p></li>`, false)
 
@@ -301,6 +301,12 @@ function drawLine(x0, y0, x1, y1, color, emit, u, strokeWidth){
     color: color,
     user: current.user
   });
+}
+
+let inviteFromTwitter = () => {
+  let gameUrl = document.querySelector(".shareLink").value
+  let inviteText = `Join me on Social Distance Drawing! 🎨 ${gameUrl}`
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURI(inviteText)}&button_hashtag=SocialDistanceDrawing`)
 }
 
 function onMouseDown(e){
@@ -443,7 +449,7 @@ clear.addEventListener("click", () => {
 
 socket.on("clearCanvas", (data) => {
   let {room, user} = data;
-  updateCanvasColor(room.bg)
+  updateCanvasColor(room.bg, false)
   showMessage(`<li class="status"><p>${user.userName} cleared the canvas!</p></li>`, false)
 
 })
@@ -560,16 +566,22 @@ const canvasPickr = Pickr.create({
   }
 });
 
-function updateCanvasColor(color){  
+function updateCanvasColor(color, updateEraser){  
   // update canvas bg
   context.fillStyle = color;
   context.fillRect(0, 0, canvas.width, canvas.height)
 
-  // updte eraser color to match new canvas bg
-  let oldEraser = document.querySelector(".eraser").classList[1];
-  document.querySelector(".eraser").classList.replace(oldEraser, color)
+  if(updateEraser){
+    // updte eraser color to match new canvas bg
+    let eraser = document.querySelector(".eraser")
+    let oldEraser = eraser.classList[1];
+    eraser.classList.replace(oldEraser, color)
 
-  document.querySelector(".black").click();
+    if(eraser.classList.contains("active")){
+      current.color = color;
+    }
+
+  }
 }
 
 canvasPickr.on("save", (color) => {
@@ -579,7 +591,7 @@ canvasPickr.on("save", (color) => {
 
   color = color.toHEXA().toString();
 
-  updateCanvasColor(color)
+  updateCanvasColor(color, true)
 
   canvasPickr.hide();
 
@@ -629,6 +641,10 @@ document.addEventListener("click", (e) => {
       playerCount.classList.remove("open")
       settingsIcon.classList.toggle("display")
     }
+  }
+
+  if(e.target.classList.contains("tweet") || e.target.closest(".tweet")){
+    inviteFromTwitter()
   }
 })
 
@@ -805,14 +821,17 @@ firstRnStartBtn.addEventListener("click", () => {
 
     firstRnContent.innerHTML = `
       <p>Looks like you are the only one here! The game is more fun with friends, so you can start off by inviting some with the following link:</p>
-      <input type="text" value="" class="shareLink"/>
+      <input type="text" value="" readonly class="shareLink"/>
+      <span class="tweet"><i data-feather="twitter"></i><em>Invite friends from Twitter!</em></span>
       <ul class="firstRunPlayersList"><li>Waiting for players to join...</li></ul>
     `
 
     document.querySelector("#first-run .start-fr").innerText = "...or draw on your own"
+    
 
     let shareLinkBox = document.querySelector("#first-run .shareLink")
     inviteLink(shareLinkBox)
+    feather.replace() 
   } else{
     MicroModal.close()
     socket.emit("joinGame")
@@ -834,7 +853,7 @@ function startTimer(duration, display, currentRound) {
 
       display.textContent = minutes + ":" + seconds;
 
-      if(timer < 16 && !soundPlayed){
+      if(timer < 16 && !soundPlayed && currentRound){
         playAudio(['sounds/tick.mp3']).play().volume(userJoined ? 0.1 : 0.3)
         document.querySelector(".buttons .timer").classList.add("yellow")
         soundPlayed = true;
@@ -1010,7 +1029,21 @@ socket.on("reloadGame", () => {
   }
 })
 
-socket.on("gameFinish", () => {
+socket.on("gameFinish", (game) => {
+
+  let userCount = document.querySelector(".player-count span").innerText;
+  let userVotes = Object.values(game.ranks);
+  let hasVotes = false;
+
+  userVotes.map(vote => {
+    if(vote != 0){
+      hasVotes = true;
+    }
+  })
+
+  // if its just one user, we dont show winners
+  if(parseInt(userCount) <= minUsersNeededForVoting && !hasVotes) return;
+
   firstRnHeader.innerText = "Winner winner chicken dinner";
   document.querySelector(".modal__footer").innerHTML = "You can go back to just drawing now :)<button class='btn-d play-gamed'>Start new game</button>&nbsp;<button class='btn-d' data-micromodal-close=''>Close</button>";
 
@@ -1066,4 +1099,5 @@ function dropdown(elem, className){
     }
   })
 }
+
 

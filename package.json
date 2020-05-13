@@ -1,6 +1,6 @@
 {
   "name": "social-dinstance-drawing",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple collaborative whiteboard using socket.io, with social distancing limits",
   "main": "server.js",
   "dependencies": {
