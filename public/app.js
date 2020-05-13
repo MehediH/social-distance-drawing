@@ -8,8 +8,6 @@ if(!room){
   window.location = "/"
 }
 
-
-
 const socket = io();
 
 let canvas = document.getElementsByClassName('whiteboard')[0];
@@ -180,13 +178,14 @@ socket.on("newUser", (user) => {
 })
 
 socket.on("collided", (collision) => {
+  playAudio(['sounds/oop.mp3']).volume(0.3).play()
+
   document.body.classList.add("collided")
 
   updateCanvasColor(collision.bg, false);
 
   showMessage(`<li class="status collision"><p>${collision.p1.userName} & ${collision.p2.userName} broke social distance!</p></li>`, false)
 
-  playAudio(['sounds/oop.mp3']).play()
 
   setTimeout(() => {
     document.body.classList.remove("collided")
@@ -338,7 +337,7 @@ function onMouseUp(e){
 
 function onMouseMove(e){
   let pos = getMousePosition(e.clientX, e.clientY)
-  let touchPos;
+  let touchPos = [];
 
   if(e.touches) touchPos = getMousePosition(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
   
@@ -1030,7 +1029,7 @@ socket.on("reloadGame", () => {
 })
 
 socket.on("gameFinish", (game) => {
-
+  if(!game) return;
   let userCount = document.querySelector(".player-count span").innerText;
   let userVotes = Object.values(game.ranks);
   let hasVotes = false;
