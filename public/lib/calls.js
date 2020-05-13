@@ -113,6 +113,14 @@ let leaveAudioRoom = () => {
     // show which microphone is being used
     document.querySelector(".calls .info").innerText = `Using microphone: ${localStream.getTracks()[0].label} - click the button below to join!`
 
+    // check if room is empty, if it is, we show the usualw arning
+    if(document.querySelector(".calls .audios").children.length === 1){
+        document.querySelector(".calls .warn").innerText = `Looks like you are the only one here! You can join the call now, and others can join you whenever they want.`;
+        document.querySelector(".calls .block-title").style.display = "none";
+        document.querySelector(".calls .warn").style.display = "block";
+        document.querySelector(".calls .users").innerHTML = "";
+    }
+    
     activeAudios.innerHTML = ""; // remove all active audios from other paticipants
 
     localStream.getTracks()[0].stop(); // stop mic
@@ -120,13 +128,6 @@ let leaveAudioRoom = () => {
     let userInRoom = document.getElementById(`u${current.user.id}-audio`); // remove the user
     if(userInRoom) userInRoom.remove()
 
-    // check if room is empty, if it is, we show the usualw arning
-    if(document.querySelector(".calls .audios").children.length === 0){
-        document.querySelector(".calls .warn").innerText = `Looks like you are the only one here! You can join the call now, and others can join you whenever they want.`;
-        document.querySelector(".calls .block-title").style.display = "none";
-        document.querySelector(".calls .warn").style.display = "block";
-        document.querySelector(".calls .users").innerHTML = "";
-    }
 
     let numOfUsersInCall = document.querySelector(".calls p").innerText.match(/\d/g)[0];
     usersInCall.innerText = `(${numOfUsersInCall - 1})`
