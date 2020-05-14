@@ -475,7 +475,7 @@ socket.on("lockRoom", (data) => {
   }
 })
 
-// document.addEventListener("contextmenu", e => e.preventDefault())
+canvas.addEventListener("contextmenu", e => e.preventDefault())
 
 // allow brush size change
 

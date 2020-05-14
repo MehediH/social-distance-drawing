@@ -3,6 +3,9 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
+const compression = require('compression');
+const minify = require('express-minify');
+
 const { createRoom, getRoom, userJoin, getRoomUsers, userLeave, updateRoomCanvas, getRooms, getUserFromRoom, resetRoomCanvas, lockRoom, updateCanvasBG, startGame, nextRound, votePlayer, userSetAudio, setGameMode, updateName, userSetMute} = require("./utils/rooms");
 
 const app = express();
@@ -10,6 +13,9 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 const maxRoomLimit = 10;
+
+app.use(compression());
+app.use(minify());
 
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
@@ -259,6 +265,10 @@ io.on('connection', (socket) => {
     }
   }
 });
+
+app.get("*", (req, res) => {
+  res.redirect("/")
+})
 
 const PORT = process.env.PORT || 3000;
 
