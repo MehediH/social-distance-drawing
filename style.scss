@@ -318,24 +318,17 @@ html, body {
     transition: 0.3s all ease-in-out;
     cursor: default;
 
-    .btnic{
-      &:hover{
-        svg{
-          opacity: 1 !important;
-        }
+    &:hover{
+      .btnic svg.feather, span.btn-label{
+        opacity: 1 !important;
       }
     }
-    
     span.btn-label{
       display: grid !important;
       grid-template-rows: 1fr 1fr;
       line-height: initial !important;
       text-align: left;
       padding: 5px 20px 20px 0px !important;
-
-      &:hover{
-        opacity: 1 !important;
-      }
 
       t{
         padding-right: 5px;
@@ -348,14 +341,18 @@ html, body {
       opacity: 0.75;
     }
 
-    &:hover{
-      opacity: 1 !important;
-
-    }
   }
 
   .no-text div{
     border-radius: 50px !important;
+  }
+
+  .open.btn{
+    &:hover{
+      .btnic svg.feather, span.btn-label{
+        opacity: 1 !important;
+      }
+    }
   }
 
   .btn{
@@ -373,6 +370,12 @@ html, body {
     color: #333;
     font-size: 15px;
 
+    &:hover{
+      .btnic svg.feather, span.btn-label{
+        opacity: 0.65;
+      }
+    }
+
     div.btnic{
       width: 50px;
       height: 50px;
@@ -382,12 +385,7 @@ html, body {
       background-color: #fff;
       border-radius: 50px 0px 0px 50px;
 
-      &:hover{
-        svg.feather{
-          opacity: 0.65;
-        }
-        
-      }
+     
     }
 
     span.btn-label{
@@ -397,10 +395,6 @@ html, body {
       line-height: 50px;
       padding-right: 20px;
       border-radius: 0px 50px 50px 0px;
-
-      &:hover{
-        opacity: 0.65;
-      }
 
       p{
         display: inline-block;
@@ -419,6 +413,22 @@ html, body {
     }
 
    
+  }
+
+  .lock{
+    span, div{
+      opacity: 1 !important;
+    }
+
+    &:hover{
+      .feather-lock{
+        display: block;
+      }
+  
+      .feather-unlock{
+        display: none;
+      }
+    }
   }
 
   .locked{
@@ -1022,11 +1032,23 @@ html, body {
   font-family: -apple-system,BlinkMacSystemFont,avenir next,avenir,helvetica neue,helvetica,ubuntu,roboto,noto,segoe ui,arial,sans-serif;
 }
 
+@media(max-width: 1274px){
+  .leaderboard{
+    .play-gamed{
+      display: block;
+    }
+  }
+}
+
 @media(min-width: 1275px){
   .leaderboard{
     max-width: 80vw !important;
     width: 50vw !important;
     height: 30vw;
+
+    .play-gamed{
+      margin-right: 10px;;
+    }
   }
 
   .modal__overlay.side{
@@ -1045,10 +1067,6 @@ html, body {
     z-index: 6 !important;
   }
 
-  .leaderboard{
-    
-  }
-  
   .modal__overlay {
     position: absolute !important;
     top: 0 !important;
@@ -1321,6 +1339,11 @@ html, body {
   opacity: 0;
   pointer-events: none;
   transition: 0.1s opacity ease-in-out;
+
+  svg{
+    width: 35px;
+    height: auto;
+  }
 
   em{
     display: block;

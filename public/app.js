@@ -121,12 +121,11 @@ socket.on("newId", (data) => {
 
 
 socket.on('roomUsers', (users) => {
+
   if(users.length > 1){
     justDrawBtn.classList.add("hide")
   } else{
-    if(document.querySelector(".play-game").classList.contains("hide")){
-      justDrawBtn.classList.remove("hide")
-    }
+    justDrawBtn.classList.remove("hide")
   }
 
   document.querySelector(".player-count span").innerText = users.length;
@@ -621,6 +620,10 @@ document.addEventListener("keydown", (e) => {
   if(e.keyCode === 67 && e.target.localName !== "input"){
     playerCount.classList.toggle("open")
     settingsIcon.classList.toggle("display")
+
+    if(playerCount.classList.contains("open")){
+      document.querySelector(".chat-input input").focus();
+    }
   }
 
   // if(e.keyCode === 16){
@@ -769,12 +772,14 @@ function updateNameHandler(elem, triggerElem, onEnter){
     })
   }
 
-  elem.addEventListener("keyup", (e) => {
-    if(e.keyCode === 13){
-      e.preventDefault();
-      onEnter();
-    }
-  })
+  if(elem){
+    elem.addEventListener("keyup", (e) => {
+      if(e.keyCode === 13){
+        e.preventDefault();
+        onEnter();
+      }
+    })
+  }
 }
 
 socket.on("updatedUserName", updateDetails => {
@@ -840,6 +845,7 @@ firstRnStartBtn.addEventListener("click", () => {
 
 let gameStop;
 let soundPlayed = false;
+let previousRound = 0;
 function startTimer(duration, display, currentRound) {
   if(gameStop){return;}
   let timer = duration, minutes, seconds;
@@ -853,15 +859,22 @@ function startTimer(duration, display, currentRound) {
       display.textContent = minutes + ":" + seconds;
 
       if(timer < 16 && !soundPlayed && currentRound){
-        playAudio(['sounds/tick.mp3']).play().volume(userJoined ? 0.1 : 0.3)
         document.querySelector(".buttons .timer").classList.add("yellow")
+        playAudio(['sounds/tick.mp3']).play().volume(userJoined ? 0.1 : 0.3)
         soundPlayed = true;
       }
 
       if (--timer < 0) { // timer done
         soundPlayed = false;
         document.querySelector(".buttons .timer").classList.remove("yellow")
+
+        if(currentRound === undefined && previousRound === 5){
+          finishGameUI();
+          socket.emit("requestFinish")
+        }
+
         if(currentRound){
+          previousRound = currentRound;
           nextRound(currentRound)
         } else{
           MicroModal.close()
@@ -890,11 +903,17 @@ socket.on("skipRoundWait", () => {
 // game
 function startGame(game){
   
+  document.querySelector(".buttons .btn.play-game").classList.add("hide");
 
   let timer = Math.abs(Date.now()-game.timer) / 1000;
   startTimer(roundDuration-timer, document.querySelector(".timer span t"), game.round)
   document.querySelector(".timer span em").innerText = `(round ${game.round})`
   document.querySelector(".timer i").innerText = `draw ${game.currentlyDrawing}`
+
+  if(game.currentlyDrawing === ""){
+    finishGameUI()
+    return;
+  }
 
   let currentlyDrawing = document.querySelector(".currently-drawing");
   currentlyDrawing.innerHTML = `<em>draw</em><span>${game.currentlyDrawing}</span>`
@@ -908,18 +927,38 @@ function startGame(game){
   
 }
 
+function finishGameUI(){
+  document.querySelector(".buttons .btn.play-game").classList.remove("hide");
+  let currentlyDrawing = document.querySelector(".currently-drawing");
+  currentlyDrawing.innerHTML = `<em>game finished</em><span>hit "play game" or <i data-feather="crosshair"></i> to start again</span>`
+  currentlyDrawing.classList.add("show")
+
+  feather.replace();
+
+  setTimeout(() => {
+    currentlyDrawing.classList.remove("show")
+  }, 3000)
+}
+
 function nextRound(currentRound){
   let userCount = document.querySelector(".player-count span").innerText;
   
   // if its just one user, we dont vote and go next round
   if(parseInt(userCount) <= minUsersNeededForVoting){
-    if(currentRound >= 5){
-      socket.emit("forceFinish");
-    } else{
+    if(currentRound < 5){
       socket.emit("nextRound");
-    }
+      return;
+    } 
+
+    socket.emit("requestFinish")
+
+    
+
+    justDraw();
+
     return;
   }
+
 
   document.querySelector(".modal__container").classList.add("leaderboard")
   document.querySelector(".modal__overlay").classList.remove("normal")
@@ -951,7 +990,25 @@ function showRanks(clickable, currentRound){
   socket.on("playersList", data => {
     let {users, ranks} = data;
 
-    users.map(user => user.wins = ranks[user.id]) 
+    let rankIDs = Object.keys(ranks)
+
+    // we see if a user is disconnected and if they are, we make a fake user item in the users list 
+    // only if they have any votes
+    rankIDs.map(user => {
+      let u = users.find(u => u ? u.id === user : false);
+      
+      if(!u && ranks[user] != 0){
+        users[users.length+1] = {
+          userName: "disconnected-user",
+          id: user,
+          wins: ranks[user],
+          disconnected: true
+        }
+      } else if(u){
+        u.wins = ranks[user]
+      }
+
+    })
   
     users.sort((a, b) => b.wins - a.wins) 
 
@@ -959,7 +1016,7 @@ function showRanks(clickable, currentRound){
 
     if(clickable){
       content = "<ul class='vote-players'>"
-      content += `${users.map((user, i) => `<li class="player" playerId="${user.id}"><input type="radio" id="${i}" name="vote" value="${user.id}"><label for="${i}">${user.userName}<span><em>👑</em>${user.wins}</span></label></li>`).join("")}`
+      content += `${users.map((user, i) => !user.disconnected && user.id !== current.user.id ? `<li class="player" playerId="${user.id}"><input type="radio" id="${i}" name="vote" value="${user.id}"><label for="${i}">${user.userName}<span><em>👑</em>${user.wins}</span></label></li>` : "").join("")}`
       content += "</ul>"
 
       content += "<button class='submit-vote btn-d'>Submit vote</button>" 
@@ -1029,16 +1086,19 @@ socket.on("reloadGame", () => {
 })
 
 socket.on("gameFinish", (game) => {
-  if(!game) return;
   let userCount = document.querySelector(".player-count span").innerText;
   let userVotes = Object.values(game.ranks);
   let hasVotes = false;
-
+  
   userVotes.map(vote => {
     if(vote != 0){
       hasVotes = true;
     }
   })
+  
+  
+  finishGameUI()
+
 
   // if its just one user, we dont show winners
   if(parseInt(userCount) <= minUsersNeededForVoting && !hasVotes) return;

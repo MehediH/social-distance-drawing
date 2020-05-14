@@ -104,11 +104,10 @@ io.on('connection', (socket) => {
       socket.emit("joinGame", game)
     }
   })  
-  
-  socket.on("forceFinish", () => {
+
+  socket.on("requestFinish", () => {
     let room = getRoom(rid);
-    let game = room.game;
-    io.to(rid).emit("gameFinish", game);
+    socket.emit("gameFinish", room.game)
   })
 
   socket.on("nextRound", () => {
@@ -118,15 +117,15 @@ io.on('connection', (socket) => {
     let timer = Math.abs(Date.now()-game.timer) / 1000
 
     
-    if(timer < 60 && game.round !== 5){
+    if(timer < 5){
       socket.emit("joinGame", game)
       return;
     }
 
-    if(game.round === 5){
-      io.to(rid).emit("gameFinish", game)
-      return;
-    }
+    // if(game.round === 5){
+    //   io.to(rid).emit("gameFinish", game)
+    //   return;
+    // }
     
     io.to(rid).emit('clearCanvas', {room, user: {userName: "the game"}})
 
