@@ -1534,10 +1534,16 @@ button.btn-d, a.btn-d{
   
 }  
 
-.game, canvas{
-  overflow: hidden !important;
-  position: relative !important;
-  height: 100% !important;
+html.game{
+  position: fixed !important;
+  width: 100%;
+  height: 100%;
+}
+
+.game{
+  overflow: hidden;
+  position: relative;
+  height: 100%;
 }
 
 .tweet{
