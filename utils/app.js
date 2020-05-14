@@ -31,6 +31,8 @@ let chatAutoClose;
 let brushSize = 10;
 let userJoined = false; // audio
 let usersInCall = document.querySelector(".calls .btn-label p");
+let isTickMuted = localStorage.getItem("sddMute") === "true" ? true : false;
+let tick;
 
 // game settings
 const roundDuration = 60;
@@ -859,8 +861,18 @@ function startTimer(duration, display, currentRound) {
       display.textContent = minutes + ":" + seconds;
 
       if(timer < 16 && !soundPlayed && currentRound){
-        document.querySelector(".buttons .timer").classList.add("yellow")
-        playAudio(['sounds/tick.mp3']).play().volume(userJoined ? 0.1 : 0.3)
+        let tAudio = document.querySelector(".buttons .timer audio")
+        if(tAudio) tAudio.remove();
+
+        let t = document.querySelector(".buttons .timer");
+        t.classList.add("yellow")
+        
+        playAudio(['sounds/tick.mp3'], t).volume(userJoined ? 0.1 : 0.3).play()
+
+        if(isTickMuted){
+          document.querySelector(".buttons .timer audio").muted = true;
+        } 
+
         soundPlayed = true;
       }
 
@@ -1159,4 +1171,25 @@ function dropdown(elem, className){
   })
 }
 
+let tickMute = document.querySelector(".timer e")
 
+if(isTickMuted){
+  document.querySelector(".timer").classList.add("muted")
+}
+
+tickMute.addEventListener("click", () => {
+  let isMuted = localStorage.getItem("sddMute") === "true" ? true : false;
+  let tick = document.querySelector(".buttons .timer audio");
+
+  if(isMuted){
+    localStorage.setItem("sddMute", "false")
+    document.querySelector(".timer").classList.remove("muted")
+    tick.muted = false;
+    isTickMuted = false;
+  } else{
+    localStorage.setItem("sddMute", "true")
+    tick.muted = true;
+    document.querySelector(".timer").classList.add("muted")
+    isTickMuted = true;
+  }
+})

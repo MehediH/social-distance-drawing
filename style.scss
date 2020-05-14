@@ -307,7 +307,30 @@ html, body {
     }
   }
 
+  .timer.muted{
+    .feather-volume-x{
+      display: block !important;
+    }
+    .feather-volume-2{
+      display: none !important;
+    }
+  }
+
   .timer.yellow{
+    e{
+      display: block;
+
+      .feather-volume-x{
+        display: none;
+      }
+      .feather-volume-2{
+        display: block;
+      }
+    }
+
+    .feather-clock{
+      display: none;
+    }
     div, .btn-label{
       background-color: #ffff0e;
       animation: anna forwards 15s 0s cubic-bezier(.36,.07,.19,.97);
@@ -317,6 +340,16 @@ html, body {
     display: flex;
     transition: 0.3s all ease-in-out;
     cursor: default;
+
+    e{
+      display: none;
+      cursor: pointer;
+      transition: 0.3s all ease-in-out;
+      
+      &:hover{
+        opacity: 0.75;
+      }
+    }
 
     &:hover{
       .btnic svg.feather, span.btn-label{
